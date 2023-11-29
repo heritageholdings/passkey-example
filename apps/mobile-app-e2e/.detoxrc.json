@@ -1,0 +1,89 @@
+{
+  "testRunner": {
+    "args": {
+      "$0": "jest",
+      "config": "./jest.config.json"
+    },
+    "jest": {
+      "setupTimeout": 120000
+    }
+  },
+  "apps": {
+    "ios.debug": {
+      "type": "ios.app",
+      "build": "cd ../../apps/mobile-app/ios && xcodebuild -workspace MobileApp.xcworkspace -scheme MobileApp -configuration Debug -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14' -derivedDataPath ./build -quiet",
+      "binaryPath": "../../apps/mobile-app/ios/build/Build/Products/Debug-iphonesimulator/MobileApp.app"
+    },
+    "ios.release": {
+      "type": "ios.app",
+      "build": "cd ../../apps/mobile-app/ios && xcodebuild -workspace MobileApp.xcworkspace -scheme MobileApp -configuration Release -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14' -derivedDataPath ./build -quiet",
+      "binaryPath": "../../apps/mobile-app/ios/build/Build/Products/Release-iphonesimulator/MobileApp.app"
+    },
+
+    "ios.local": {
+      "type": "ios.app",
+      "build": "yarn nx run mobile-app:build --platform ios --profile preview --wait --local --no-interactive --output=../../apps/mobile-app/dist/MobileApp.tar.gz",
+      "binaryPath": "../../apps/mobile-app/dist/MobileApp.app"
+    },
+
+    "android.debug": {
+      "type": "android.apk",
+      "build": "cd ../../apps/mobile-app/android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug",
+      "binaryPath": "../../apps/mobile-app/android/app/build/outputs/apk/debug/app-debug.apk"
+    },
+    "android.release": {
+      "type": "android.apk",
+      "build": "cd ../../apps/mobile-app/android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release",
+      "binaryPath": "../../apps/mobile-app/android/app/build/outputs/apk/release/app-release.apk"
+    },
+
+    "android.local": {
+      "type": "android.apk",
+      "build": "yarn nx run mobile-app:build --platform android --profile preview --wait --local --no-interactive --output=../../apps/mobile-app/dist/MobileApp.apk",
+      "binaryPath": "../../apps/mobile-app/dist/MobileApp.apk"
+    }
+  },
+  "devices": {
+    "simulator": {
+      "type": "ios.simulator",
+      "device": {
+        "type": "iPhone 14"
+      }
+    },
+    "emulator": {
+      "type": "android.emulator",
+      "device": {
+        "avdName": "Pixel_4a_API_30"
+      }
+    }
+  },
+  "configurations": {
+    "ios.sim.release": {
+      "device": "simulator",
+      "app": "ios.release"
+    },
+    "ios.sim.debug": {
+      "device": "simulator",
+      "app": "ios.debug"
+    },
+
+    "ios.sim.local": {
+      "device": "simulator",
+      "app": "ios.local"
+    },
+
+    "android.emu.release": {
+      "device": "emulator",
+      "app": "android.release"
+    },
+    "android.emu.debug": {
+      "device": "emulator",
+      "app": "android.debug"
+    },
+
+    "android.emu.local": {
+      "device": "emulator",
+      "app": "android.local"
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "mobile-app",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "@testing-library/jest-native": "*",
+    "@testing-library/react-native": "*",
+    "metro-config": "*",
+    "react-native": "*",
+    "expo": "*",
+    "react-native-svg": "*",
+    "react-native-web": "*",
+    "@nx/expo": "*",
+    "@expo/metro-config": "*",
+    "react-native-svg-transformer": "*",
+    "react": "*"
+  },
+  "scripts": {
+    "eas-build-pre-install": "cd ../../ && node tools/scripts/eas-build-pre-install.mjs . apps/mobile-app && cp yarn.lock apps/mobile-app",
+    "eas-build-post-install": "cd ../../ && node tools/scripts/eas-build-post-install.mjs . apps/mobile-app"
+  }
+}

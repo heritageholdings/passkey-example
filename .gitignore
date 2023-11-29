@@ -39,3 +39,21 @@ testem.log
 Thumbs.db
 
 .nx/cache
+
+# Expo
+node_modules/
+.expo/
+.yarn/
+dist/
+npm-debug.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
+cache/
+
+
+apps/mobile-app-e2e/artifacts
