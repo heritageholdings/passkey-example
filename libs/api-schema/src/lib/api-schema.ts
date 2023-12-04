@@ -84,7 +84,7 @@ const AuthenticatorSelectionCriteria = S.struct({
 
 /**
  * Registration Challenge request:
- * The server send to the client the challenge to register a new passkey
+ * The server send to the client the challenge in order to register a new passkey
  * see https://w3c.github.io/webauthn/#dictionary-makecredentialoptions
  */
 export const CredentialCreationOptions = S.struct({
@@ -106,4 +106,91 @@ export const CredentialCreationOptions = S.struct({
 
 export type CredentialCreationOptions = S.Schema.To<
   typeof CredentialCreationOptions
+>;
+
+// https://w3c.github.io/webauthn/#dictdef-authenticatorattestationresponsejson
+const AuthenticatorAttestationResponseJSON = S.struct({
+  clientDataJSON: S.string,
+  attestationObject: S.string,
+  transports: S.array(AuthenticatorTransportFuture).pipe(S.optional),
+});
+
+// https://w3c.github.io/webauthn/#dictdef-credentialpropertiesoutput
+const AuthenticationExtensionsClientOutputs = S.struct({
+  appid: S.boolean,
+  credProps: S.struct({
+    rk: S.boolean.pipe(S.optional),
+  }),
+  hmacCreateSecret: S.boolean,
+});
+
+/*
+ * Registration Verification:
+ * The FIDO2 Attestation Result, see https://w3c.github.io/webauthn/#dictdef-registrationresponsejson
+ * In addition to the standard, we add the createdFrom and createdPlatform fields
+ * to track where the registration was created from.
+ * The response that the client sends to the server after signing in the previous received challenge,
+ * to complete registration of a new passkey
+ */
+export const RegistrationResponseJSON = S.struct({
+  id: S.string,
+  rawId: S.string,
+  response: AuthenticatorAttestationResponseJSON,
+  clientExtensionResults: AuthenticationExtensionsClientOutputs,
+  type: S.literal('public-key'),
+
+  authenticatorAttachment: AuthenticatorAttachment.pipe(S.optional),
+  createdDevice: S.string.pipe(S.optional),
+});
+
+export type RegistrationResponseJSON = S.Schema.To<
+  typeof RegistrationResponseJSON
+>;
+
+// https://w3c.github.io/webauthn/#dictdef-authenticatorassertionresponsejson
+const AuthenticatorAssertionResponseJSON = S.struct({
+  clientDataJSON: S.string,
+  authenticatorData: S.string,
+  signature: S.string,
+  userHandle: S.string.pipe(S.optional),
+});
+
+/**
+ * Authentication Request:
+ * The {@link PublicKeyCredentialRequestOptions} that the server sends to the client to authenticate
+ * see https://w3c.github.io/webauthn/#dictionary-assertion-options
+ */
+export const PublicKeyCredentialRequestOptions = S.struct({
+  challenge: S.string,
+  rpId: S.string,
+  timeout: S.number,
+  userVerification: UserVerificationRequirement,
+
+  allowCredentials: S.array(PublicKeyCredentialDescriptor).pipe(S.optional),
+  attestation: S.string.pipe(S.optional),
+  attestationFormats: S.array(S.string).pipe(S.optional),
+  extensions: S.record(S.string, S.unknown).pipe(S.optional),
+});
+
+export type PublicKeyCredentialRequestOptions = S.Schema.To<
+  typeof PublicKeyCredentialRequestOptions
+>;
+
+/**
+ * Authentication Verification:
+ * The response that the client sends to the server after signing in the previous received challenge
+ * see https://w3c.github.io/webauthn/#dictdef-authenticationresponsejson
+ */
+export const AuthenticationResponseJSON = S.struct({
+  id: S.string,
+  rawId: S.string,
+  response: AuthenticatorAssertionResponseJSON,
+  clientExtensionResults: AuthenticationExtensionsClientOutputs,
+  type: S.literal('public-key'),
+
+  authenticatorAttachment: AuthenticatorAttachment.pipe(S.optional),
+});
+
+export type AuthenticationResponseJSON = S.Schema.To<
+  typeof AuthenticationResponseJSON
 >;
