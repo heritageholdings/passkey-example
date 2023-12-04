@@ -1,86 +1,35 @@
 import * as S from '@effect/schema/Schema';
+import {
+  AttestationConveyancePreference,
+  AuthenticationExtensionsClientOutputs,
+  AuthenticatorAssertionResponseJSON,
+  AuthenticatorAttachment,
+  AuthenticatorAttestationResponseJSON,
+  AuthenticatorSelectionCriteria,
+  PublicKeyCredentialDescriptor,
+  PublicKeyCredentialParameters,
+  PublicKeyCredentialRpEntity,
+  PublicKeyCredentialUserEntity,
+  UserVerificationRequirement,
+} from './internalTypes';
 
-// https://w3c.github.io/webauthn/#enum-transport
-const AuthenticatorTransportFuture = S.literal(
-  'ble',
-  'internal',
-  'nfc',
-  'usb',
-  'cable',
-  'smart-card',
-  'hybrid'
-);
-
-// https://w3c.github.io/webauthn/#dom-authenticatorselectioncriteria-authenticatorattachment
-const AuthenticatorAttachment = S.literal('cross-platform', 'platform');
-
-// https://w3c.github.io/webauthn/#enum-residentKeyRequirement
-const ResidentKeyRequirement = S.literal(
-  'discouraged',
-  'preferred',
-  'required'
-);
-
-// https://w3c.github.io/webauthn/#enumdef-userverificationrequirement
-const UserVerificationRequirement = S.literal(
-  'discouraged',
-  'preferred',
-  'required'
-);
-
-// https://w3c.github.io/webauthn/#enumdef-attestationconveyancepreference
-const AttestationConveyancePreference = S.literal(
-  'direct',
-  'enterprise',
-  'indirect',
-  'none'
-);
-
-// https://w3c.github.io/webauthn/#dictdef-publickeycredentialentity
-const PublicKeyCredentialEntity = S.struct({
-  name: S.string,
-});
-
-// https://w3c.github.io/webauthn/#dictdef-publickeycredentialrpentity
-
-const PublicKeyCredentialRpEntity = PublicKeyCredentialEntity.pipe(
-  S.extend(
-    S.struct({
-      id: S.string,
-    })
-  )
-);
-
-// https://w3c.github.io/webauthn/#dictdef-publickeycredentialuserentity
-const PublicKeyCredentialUserEntity = PublicKeyCredentialEntity.pipe(
-  S.extend(
-    S.struct({
-      id: S.string,
-      displayName: S.string,
-    })
-  )
-);
-
-// https://w3c.github.io/webauthn/#dictdef-publickeycredentialparameters
-const PublicKeyCredentialParameters = S.struct({
-  type: S.literal('public-key'),
-  alg: S.number,
-});
-
-// https://w3c.github.io/webauthn/#dictdef-publickeycredentialdescriptor
-const PublicKeyCredentialDescriptor = S.struct({
-  id: S.string,
-  type: S.literal('public-key'),
-  transports: S.array(AuthenticatorTransportFuture).pipe(S.optional),
-});
-
-// https://w3c.github.io/webauthn/#dictdef-authenticatorselectioncriteria
-const AuthenticatorSelectionCriteria = S.struct({
-  authenticatorAttachment: AuthenticatorAttachment.pipe(S.optional),
-  requireResidentKey: S.boolean.pipe(S.optional),
-  residentKey: ResidentKeyRequirement.pipe(S.optional),
-  userVerification: UserVerificationRequirement.pipe(S.optional),
-});
+/**
+ * This file contains the schema used to verify the payloads exchanged between the client and the server during the
+ * registration of a new passkey and the authentication of an existing one.
+ *
+ * Registration:
+ * - The client asks the server for the registration options {@link CredentialCreationOptions}
+ * - The server sends the registration options to the client {@link CredentialCreationOptions}
+ * - The client signs the registration options and sends the result {@link RegistrationResponseJSON} to the server
+ * - The server validate the signed registration options {@link RegistrationResponseJSON} and register the passkey
+ *
+ * Authentication:
+ * - The client asks the server for the authentication options {@link PublicKeyCredentialRequestOptions}
+ * - The server sends the authentication options to the client {@link PublicKeyCredentialRequestOptions}
+ * - The client signs the authentication options and sends the result {@link AuthenticationResponseJSON} to the server
+ * - The server validate the signed authentication options {@link AuthenticationResponseJSON} and authenticate the passkey, returning a new valid session
+ *
+ */
 
 /**
  * Registration Challenge request:
@@ -108,22 +57,6 @@ export type CredentialCreationOptions = S.Schema.To<
   typeof CredentialCreationOptions
 >;
 
-// https://w3c.github.io/webauthn/#dictdef-authenticatorattestationresponsejson
-const AuthenticatorAttestationResponseJSON = S.struct({
-  clientDataJSON: S.string,
-  attestationObject: S.string,
-  transports: S.array(AuthenticatorTransportFuture).pipe(S.optional),
-});
-
-// https://w3c.github.io/webauthn/#dictdef-credentialpropertiesoutput
-const AuthenticationExtensionsClientOutputs = S.struct({
-  appid: S.boolean,
-  credProps: S.struct({
-    rk: S.boolean.pipe(S.optional),
-  }),
-  hmacCreateSecret: S.boolean,
-});
-
 /*
  * Registration Verification:
  * The FIDO2 Attestation Result, see https://w3c.github.io/webauthn/#dictdef-registrationresponsejson
@@ -146,14 +79,6 @@ export const RegistrationResponseJSON = S.struct({
 export type RegistrationResponseJSON = S.Schema.To<
   typeof RegistrationResponseJSON
 >;
-
-// https://w3c.github.io/webauthn/#dictdef-authenticatorassertionresponsejson
-const AuthenticatorAssertionResponseJSON = S.struct({
-  clientDataJSON: S.string,
-  authenticatorData: S.string,
-  signature: S.string,
-  userHandle: S.string.pipe(S.optional),
-});
 
 /**
  * Authentication Request:
