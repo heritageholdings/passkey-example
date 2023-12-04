@@ -1248,6 +1248,11 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
+"@effect/schema@^0.51.3":
+  version "0.51.3"
+  resolved "https://registry.yarnpkg.com/@effect/schema/-/schema-0.51.3.tgz#3759c5af252e7c5bdcf770b9426c358e876a6312"
+  integrity sha512-zLTnSbgElOB/7FM5M6467bD+6SSho0kHEG8kDADgfHiOLbdo0NH39k24JkW5LLw1lKIaoKRURkgw6oFcnwXVcQ==
+
 "@esbuild/android-arm64@0.19.8":
   version "0.19.8"
   resolved "https://registry.yarnpkg.com/@esbuild/android-arm64/-/android-arm64-0.19.8.tgz#fb7130103835b6d43ea499c3f30cfb2b2ed58456"
@@ -6273,6 +6278,11 @@ ee-first@1.1.1:
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
   integrity sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==
 
+effect@^2.0.0-next.58:
+  version "2.0.0-next.58"
+  resolved "https://registry.yarnpkg.com/effect/-/effect-2.0.0-next.58.tgz#9994506518d1ee9fc3bf4a0e240325d711dd6c94"
+  integrity sha512-3JtlhJWIZlKe2krJp8ZsKCWCsKMemRVMNOGKtW6bLbg1ZYDi9riuDO44heqEyh7mVBhGsLh/Ut+Hz4olFbfhyg==
+
 ejs@^3.1.6, ejs@^3.1.7:
   version "3.1.9"
   resolved "https://registry.yarnpkg.com/ejs/-/ejs-3.1.9.tgz#03c9e8777fe12686a9effcef22303ca3d8eeb361"
@@ -6963,6 +6973,13 @@ express@^4.17.3:
     type-is "~1.6.18"
     utils-merge "1.0.1"
     vary "~1.1.2"
+
+fast-check@^3.14.0:
+  version "3.14.0"
+  resolved "https://registry.yarnpkg.com/fast-check/-/fast-check-3.14.0.tgz#1d15aca87524e598525dbb713d7f9ca1800e55cf"
+  integrity sha512-9Z0zqASzDNjXBox/ileV/fd+4P+V/f3o4shM6QawvcdLFh8yjPG4h5BrHUZ8yzY6amKGDTAmRMyb/JZqe+dCgw==
+  dependencies:
+    pure-rand "^6.0.0"
 
 fast-content-type-parse@^1.0.0:
   version "1.1.0"

@@ -14,7 +14,11 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "strict": true,
+    "exactOptionalPropertyTypes": true,
+    "paths": {
+      "@passkey-example/api-schema": ["libs/api-schema/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }
