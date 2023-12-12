@@ -1,4 +1,5 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
+import 'text-encoding-polyfill';
 import React, { useRef, useState } from 'react';
 import {
   SafeAreaView,
@@ -11,10 +12,20 @@ import {
   Linking,
 } from 'react-native';
 import Svg, { G, Path } from 'react-native-svg';
+import * as S from '@effect/schema/Schema';
+
+const CredentialCreationOptionsRequest = S.struct({
+  email: S.string.pipe(
+    S.pattern(new RegExp('^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$'))
+  ),
+});
 
 export const App = () => {
   const [whatsNextYCoord, setWhatsNextYCoord] = useState<number>(0);
   const scrollViewRef = useRef<null | ScrollView>(null);
+
+  const res = S.parseEither(CredentialCreationOptionsRequest)({ asd: 'asd' });
+  console.log(res);
 
   return (
     <>

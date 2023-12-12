@@ -16,7 +16,9 @@
     "react": "*",
     "expo-splash-screen": "~0.20.5",
     "expo-status-bar": "~1.6.0",
-    "@babel/core": "*"
+    "@babel/core": "*",
+    "@effect/schema": "*",
+    "text-encoding-polyfill": "*"
   },
   "scripts": {
     "eas-build-pre-install": "cd ../../ && node tools/scripts/eas-build-pre-install.mjs . apps/mobile-app && cp yarn.lock apps/mobile-app",
