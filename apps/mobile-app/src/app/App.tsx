@@ -13,12 +13,13 @@ import {
 } from 'react-native';
 import Svg, { G, Path } from 'react-native-svg';
 import * as S from '@effect/schema/Schema';
+import { CredentialCreationOptionsRequest } from '@passkey-example/api-schema';
 
-const CredentialCreationOptionsRequest = S.struct({
-  email: S.string.pipe(
-    S.pattern(new RegExp('^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$'))
-  ),
-});
+// const CredentialCreationOptionsRequest = S.struct({
+//   email: S.string.pipe(
+//     S.pattern(new RegExp('^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$'))
+//   ),
+// });
 
 export const App = () => {
   const [whatsNextYCoord, setWhatsNextYCoord] = useState<number>(0);

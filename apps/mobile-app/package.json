@@ -18,7 +18,9 @@
     "expo-status-bar": "~1.6.0",
     "@babel/core": "*",
     "@effect/schema": "*",
-    "text-encoding-polyfill": "*"
+    "text-encoding-polyfill": "*",
+    "tslib": "*",
+    "@nx/devkit": "*"
   },
   "scripts": {
     "eas-build-pre-install": "cd ../../ && node tools/scripts/eas-build-pre-install.mjs . apps/mobile-app && cp yarn.lock apps/mobile-app",

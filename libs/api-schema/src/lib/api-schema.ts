@@ -32,6 +32,15 @@ import {
  */
 
 /**
+ * The client request to the server to generate the registration options providing the user email
+ */
+export const CredentialCreationOptionsRequest = S.struct({
+  email: S.string.pipe(
+    S.pattern(new RegExp('^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$'))
+  ),
+});
+
+/**
  * Registration Challenge request:
  * The server send to the client the challenge in order to register a new passkey
  * see https://w3c.github.io/webauthn/#dictionary-makecredentialoptions

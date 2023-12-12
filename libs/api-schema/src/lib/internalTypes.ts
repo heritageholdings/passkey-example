@@ -1,5 +1,5 @@
 // https://w3c.github.io/webauthn/#enum-transport
-import * as S from '@effect/schema/dist/dts/Schema';
+import * as S from '@effect/schema/Schema';
 
 export const AuthenticatorTransportFuture = S.literal(
   'ble',
