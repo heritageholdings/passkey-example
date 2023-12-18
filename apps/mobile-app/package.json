@@ -12,6 +12,7 @@
     "react-native-web": "*",
     "@nx/expo": "*",
     "@expo/metro-config": "*",
+    "react-native-safe-area-context": "*",
     "react-native-svg-transformer": "*",
     "react": "*",
     "expo-splash-screen": "~0.20.5",
@@ -20,7 +21,10 @@
     "@effect/schema": "*",
     "text-encoding-polyfill": "*",
     "tslib": "*",
-    "@nx/devkit": "*"
+    "@nx/devkit": "*",
+    "@react-navigation/native": "*",
+    "react-native-screens": "*",
+    "@react-navigation/native-stack": "*"
   },
   "scripts": {
     "eas-build-pre-install": "cd ../../ && node tools/scripts/eas-build-pre-install.mjs . apps/mobile-app && cp yarn.lock apps/mobile-app",
