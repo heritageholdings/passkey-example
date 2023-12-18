@@ -1,19 +1,30 @@
-import { RouteHandlerMethod } from 'fastify';
+import { FastifyReply, RouteHandlerMethod } from 'fastify';
 import * as S from '@effect/schema/Schema';
-import { CredentialCreationOptionsRequest } from '@passkey-example/api-schema';
-import { Effect, Either, Option } from 'effect';
+import {
+  CredentialCreationOptionsRequest,
+  RegistrationResponseJSON,
+} from '@passkey-example/api-schema';
+import { Cause, Effect, Either, Exit, pipe } from 'effect';
 import {
   generateRegistrationOptions,
   GenerateRegistrationOptionsOpts,
 } from '@simplewebauthn/server';
-import { UserDatabase } from '../../../plugins/localDatabase';
 import { WebauthnConfigOptions } from '../../../plugins/webauthnConfig';
-import * as repl from 'repl';
+import {
+  ChallengesDatabase,
+  UsersDatabase,
+} from '../../../plugins/localDatabase';
+import { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/server/script/deps';
+import { ParseError } from '@effect/schema/dist/dts/ParseResult';
+
+type UserAlreadyExistsError = {
+  _tag: 'UserAlreadyExistsError';
+};
 
 const checkIfUserExists =
-  (userDatabase: UserDatabase) => (body: { email: string }) => {
+  (userDatabase: UsersDatabase) => (body: { email: string }) => {
     return userDatabase.getUser(body.email)
-      ? Either.left('User already exists')
+      ? Either.left<UserAlreadyExistsError>({ _tag: 'UserAlreadyExistsError' })
       : Either.right(body.email);
   };
 
@@ -39,32 +50,54 @@ const prepareRegistrationOptions =
     supportedAlgorithmIDs: [-7, -257],
   });
 
+const storeRegistrationChallenge =
+  (registrationChallenge: ChallengesDatabase) =>
+  (options: PublicKeyCredentialCreationOptionsJSON) => {
+    registrationChallenge.addChallenge(options.user.id, options.challenge);
+    return options;
+  };
+
+const handleErrors =
+  (reply: FastifyReply) =>
+  (
+    cause: Cause.Cause<
+      UserAlreadyExistsError | ParseError | Cause.UnknownException
+    >
+  ) => {
+    console.error(`Failed to generate registration challenge: ${cause}`);
+
+    if (cause._tag === 'Fail') {
+      if (cause.error._tag === 'UserAlreadyExistsError') {
+        reply.status(409).send({ message: 'User already exists' });
+      } else if (cause.error._tag === 'ParseError') {
+        reply.status(400).send({ message: 'Invalid request' });
+      }
+    } else {
+      reply.status(500).send({ message: 'Internal server error' });
+    }
+  };
+
 export const registerGenerateOptionsHandler =
   (): RouteHandlerMethod => async (request, reply) => {
-    const aaa = S.parseEither(CredentialCreationOptionsRequest)(
-      request.body
-    ).pipe(
-      Either.flatMap(checkIfUserExists(request.userDatabase)),
+    const createNewRegistrationChallenge = pipe(
+      S.parseEither(CredentialCreationOptionsRequest)(request.body),
+      Either.flatMap(checkIfUserExists(request.usersDatabase)),
       Either.map(prepareRegistrationOptions(request.webauthnConfig)),
       Effect.flatMap((options) =>
-        Effect.tryPromise(() => generateRegistrationOptions(options))
+        pipe(
+          Effect.tryPromise(() => generateRegistrationOptions(options)),
+          Effect.tap(storeRegistrationChallenge(request.registrationChallenge))
+        )
       )
     );
 
-    const res = await Effect.runPromiseExit(aaa);
+    const operationResults = await Effect.runPromiseExit(
+      createNewRegistrationChallenge
+    );
 
-    request.userDatabase.addUser({
-      email: 'asd@asd.it',
+    Exit.match(operationResults, {
+      onFailure: handleErrors(reply),
+      onSuccess: (credentialCreationOptions) =>
+        reply.send(credentialCreationOptions),
     });
-
-    // S.parseEither(CredentialCreationOptionsRequest)(request.body).pipe(
-    //   Either.flatMap(checkIfUserExists(request.userDatabase)),
-    //   Either.map(prepareRegistrationOptions(request.webauthnConfig)),
-    //   Either.flatMap((options) => {
-    //     const asd = Effect.runSync(
-    //       Effect.tryPromise(() => generateRegistrationOptions(options))
-    //     );
-    //   })
-    // );
-    return { message: 'register/generate-options' };
   };

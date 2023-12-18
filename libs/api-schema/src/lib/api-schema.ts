@@ -82,7 +82,6 @@ export const RegistrationResponseJSON = S.struct({
   type: S.literal('public-key'),
 
   authenticatorAttachment: AuthenticatorAttachment.pipe(S.optional),
-  createdDevice: S.string.pipe(S.optional),
 });
 
 export type RegistrationResponseJSON = S.Schema.To<

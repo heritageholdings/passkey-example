@@ -11,6 +11,7 @@
     "@fastify/sensible": "~5.2.0",
     "@simplewebauthn/server": "^8.3.5",
     "axios": "^1.0.0",
+    "base64url": "^3.0.1",
     "effect": "^2.0.0-next.58",
     "expo": "49.0.16",
     "expo-splash-screen": "~0.20.5",

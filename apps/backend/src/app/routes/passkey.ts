@@ -1,5 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { registerGenerateOptionsHandler } from '../handlers/webauthn/register/generate-options';
+import { registerVerifyHandler } from '../handlers/webauthn/register/verify';
 
 export default async (fastify: FastifyInstance) => {
   fastify.post(
@@ -7,9 +8,7 @@ export default async (fastify: FastifyInstance) => {
     registerGenerateOptionsHandler()
   );
 
-  fastify.get('/webauthn/register/verify', async function () {
-    return { message: 'register/verify' };
-  });
+  fastify.get('/webauthn/register/verify', registerVerifyHandler());
 
   fastify.get('/webauthn/authenticate/generate-options', async function () {
     return { message: 'authenticate/generate-options' };
