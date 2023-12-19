@@ -1,15 +1,13 @@
 import { RouteHandlerMethod } from 'fastify';
-import { Either, pipe, Option, Effect } from 'effect';
+import { Effect, Exit, Option, pipe } from 'effect';
 import * as S from '@effect/schema/Schema';
 import { RegistrationResponseJSON } from '@passkey-example/api-schema';
-import { ChallengesDatabase, User } from '../../../plugins/localDatabase';
-import { either } from '@effect/schema/Schema';
+import { User } from '../../../plugins/localDatabase';
 import {
   verifyRegistrationResponse,
   VerifyRegistrationResponseOpts,
 } from '@simplewebauthn/server';
 import { WebauthnConfigOptions } from '../../../plugins/webauthnConfig';
-import base64url from 'base64url';
 
 type InvalidChallengeError = {
   _tag: 'UserAlreadyExistsError';
@@ -42,13 +40,7 @@ const prepareVerifyRegistrationResponse = (
   config: WebauthnConfigOptions,
   challenge: NonNullable<string | Uint8Array | undefined>
 ): VerifyRegistrationResponseOpts => ({
-  response: {
-    ...registrationResponse,
-    response: {
-      ...registrationResponse.response,
-      transports: [...registrationResponse.response.transports],
-    },
-  },
+  response: registrationResponse,
   expectedChallenge: `${challenge}`,
   expectedOrigin: [...config.rpOrigins],
   expectedRPID: config.rpId,
@@ -104,4 +96,15 @@ export const registerVerifyHandler =
           )
       )
     );
+
+    const operationResults = await Effect.runPromiseExit(verifyRegistration);
+
+    Exit.match(operationResults, {
+      onFailure: (error) => {
+        console.log(error);
+        reply.status(500).send({ message: 'Internal server error' });
+      },
+      onSuccess: (credentialCreationOptions) =>
+        reply.send(credentialCreationOptions),
+    });
   };

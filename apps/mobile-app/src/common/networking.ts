@@ -1,6 +1,7 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import { config } from './config';
 import { Effect } from 'effect';
+import { RegistrationResponseJSON } from '@passkey-example/api-schema';
 
 export type NetworkingError = {
   __tag: 'NetworkingError';
@@ -8,26 +9,25 @@ export type NetworkingError = {
   message: string;
 };
 
-const isAxiosError = (e: unknown): e is { status: string; message: string } => {
-  if (typeof e === 'object' && e !== null && 'message' in e && 'status' in e) {
-    return 'message' in e && 'status' in e;
+const isAxiosError = (
+  e: unknown
+): e is { status?: string; message: string } => {
+  if (typeof e === 'object' && e !== null && 'message' in e) {
+    return 'message' in e;
   }
   return false;
 };
 
-export const axiosGenerateRegistrationOptions = (email: string) => {
-  const url = new URL('webauthn/register/generate-options', config.endpoint);
-  const data = {
-    email,
-  };
-  return axios.post(url.href, data);
-};
-
-export const requestRegistrationOptions = (email: string) =>
+export const axiosPost = (
+  url: string,
+  data?: unknown,
+  config?: AxiosRequestConfig<unknown>
+) =>
   Effect.tryPromise({
-    try: () => axiosGenerateRegistrationOptions(email),
-    catch: (unknown) =>
-      isAxiosError(unknown)
+    try: () => axios.post(url, data, config),
+    catch: (unknown) => {
+      console.log(JSON.stringify(unknown));
+      return isAxiosError(unknown)
         ? {
             _tag: 'NetworkingError',
             status: unknown.status,
@@ -36,5 +36,21 @@ export const requestRegistrationOptions = (email: string) =>
         : {
             _tag: 'NetworkingError',
             message: 'Unexpected network error',
-          },
+          };
+    },
   });
+
+export const axiosGenerateRegistrationOptions = (email: string) => {
+  const url = new URL('webauthn/register/generate-options', config.endpoint);
+  const data = {
+    email,
+  };
+  return axiosPost(url.href, data);
+};
+
+export const axiosVerifyRegistrationOptions = (
+  registrationResponse: RegistrationResponseJSON
+) => {
+  const url = new URL('webauthn/register/verify', config.endpoint);
+  return axiosPost(url.href, registrationResponse);
+};

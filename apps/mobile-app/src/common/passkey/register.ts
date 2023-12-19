@@ -1,11 +1,17 @@
 import { Effect, pipe } from 'effect';
 import {
   axiosGenerateRegistrationOptions,
-  requestRegistrationOptions,
+  axiosVerifyRegistrationOptions,
 } from '../networking';
 import * as S from '@effect/schema/Schema';
-import { CredentialCreationOptions } from '@passkey-example/api-schema';
-import { PasskeyRegistrationRequest } from 'react-native-passkey/lib/typescript/Passkey';
+import {
+  CredentialCreationOptions,
+  RegistrationResponseJSON,
+} from '@passkey-example/api-schema';
+import {
+  PasskeyRegistrationRequest,
+  PasskeyRegistrationResult,
+} from 'react-native-passkey/lib/typescript/Passkey';
 import base64url from 'base64url';
 import { Passkey } from 'react-native-passkey';
 import { parsePasskeyError } from './errors';
@@ -23,12 +29,30 @@ const nativeRegisterPasskey = (request: PasskeyRegistrationRequest) =>
     catch: parsePasskeyError,
   });
 
+const convertToRegistrationResponse = (
+  result: PasskeyRegistrationResult
+): RegistrationResponseJSON => ({
+  ...result,
+  id: base64url.fromBase64(result.id),
+  rawId: base64url.fromBase64(result.rawId),
+  response: {
+    ...result.response,
+    attestationObject: base64url.fromBase64(result.response.attestationObject),
+    clientDataJSON: base64url.fromBase64(result.response.clientDataJSON),
+  },
+  clientExtensionResults: {},
+  type: 'public-key',
+});
+
 export const RegisterPasskey = (email: string) => {
   return pipe(
-    requestRegistrationOptions(email),
+    email,
+    axiosGenerateRegistrationOptions,
     Effect.map((response) => response.data),
     Effect.flatMap(S.parseEither(CredentialCreationOptions)),
     Effect.map(convertCredentialCreationOptionsToReactNativePasskeyOptions),
-    Effect.flatMap(nativeRegisterPasskey)
+    Effect.flatMap(nativeRegisterPasskey),
+    Effect.map(convertToRegistrationResponse),
+    Effect.flatMap(axiosVerifyRegistrationOptions)
   );
 };

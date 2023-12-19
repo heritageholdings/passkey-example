@@ -85,20 +85,20 @@ export const AuthenticatorSelectionCriteria = S.struct({
 // https://w3c.github.io/webauthn/#dictdef-authenticatorattestationresponsejson
 export const AuthenticatorAttestationResponseJSON = S.struct({
   clientDataJSON: S.string,
-  authenticatorData: S.string,
-  publicKeyAlgorithm: S.number,
+  authenticatorData: S.string.pipe(S.optional),
+  publicKeyAlgorithm: S.number.pipe(S.optional),
   attestationObject: S.string,
-  transports: S.mutable(S.array(AuthenticatorTransportFuture)),
+  transports: S.mutable(S.array(AuthenticatorTransportFuture)).pipe(S.optional),
   publicKey: S.string.pipe(S.optional),
 });
 
 // https://w3c.github.io/webauthn/#dictdef-credentialpropertiesoutput
 export const AuthenticationExtensionsClientOutputs = S.struct({
-  appid: S.boolean,
+  appid: S.boolean.pipe(S.optional),
   credProps: S.struct({
     rk: S.boolean.pipe(S.optional),
-  }),
-  hmacCreateSecret: S.boolean,
+  }).pipe(S.optional),
+  hmacCreateSecret: S.boolean.pipe(S.optional),
 });
 
 // https://w3c.github.io/webauthn/#dictdef-authenticatorassertionresponsejson
