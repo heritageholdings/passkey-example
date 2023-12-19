@@ -84,6 +84,8 @@ export const RegistrationResponseJSON = S.struct({
   type: S.literal('public-key'),
 
   authenticatorAttachment: AuthenticatorAttachment.pipe(S.optional),
+  // Not part of the standard, added for simplify the registration ceremony, please refer to https://simplewebauthn.dev/docs/advanced/passkeys#remembering-challenges for a proper implementation of the challenge remembering
+  email: S.string,
 });
 
 export type RegistrationResponseJSON = S.Schema.To<

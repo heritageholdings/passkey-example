@@ -29,20 +29,23 @@ const nativeRegisterPasskey = (request: PasskeyRegistrationRequest) =>
     catch: parsePasskeyError,
   });
 
-const convertToRegistrationResponse = (
-  result: PasskeyRegistrationResult
-): RegistrationResponseJSON => ({
-  ...result,
-  id: base64url.fromBase64(result.id),
-  rawId: base64url.fromBase64(result.rawId),
-  response: {
-    ...result.response,
-    attestationObject: base64url.fromBase64(result.response.attestationObject),
-    clientDataJSON: base64url.fromBase64(result.response.clientDataJSON),
-  },
-  clientExtensionResults: {},
-  type: 'public-key',
-});
+const convertToRegistrationResponse =
+  (email: string) =>
+  (result: PasskeyRegistrationResult): RegistrationResponseJSON => ({
+    ...result,
+    id: base64url.fromBase64(result.id),
+    rawId: base64url.fromBase64(result.rawId),
+    response: {
+      ...result.response,
+      attestationObject: base64url.fromBase64(
+        result.response.attestationObject
+      ),
+      clientDataJSON: base64url.fromBase64(result.response.clientDataJSON),
+    },
+    clientExtensionResults: {},
+    type: 'public-key',
+    email,
+  });
 
 export const RegisterPasskey = (email: string) => {
   return pipe(
@@ -52,7 +55,8 @@ export const RegisterPasskey = (email: string) => {
     Effect.flatMap(S.parseEither(CredentialCreationOptions)),
     Effect.map(convertCredentialCreationOptionsToReactNativePasskeyOptions),
     Effect.flatMap(nativeRegisterPasskey),
-    Effect.map(convertToRegistrationResponse),
-    Effect.flatMap(axiosVerifyRegistrationOptions)
+    Effect.map(convertToRegistrationResponse(email)),
+    Effect.flatMap(axiosVerifyRegistrationOptions),
+    Effect.map((response) => response.data)
   );
 };

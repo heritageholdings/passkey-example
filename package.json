@@ -8,6 +8,7 @@
     "@effect/schema": "^0.51.3",
     "@expo/metro-config": "~0.10.7",
     "@fastify/autoload": "~5.7.1",
+    "@fastify/jwt": "^7.2.4",
     "@fastify/sensible": "~5.2.0",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.17",

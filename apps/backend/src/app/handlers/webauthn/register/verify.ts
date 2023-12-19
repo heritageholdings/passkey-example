@@ -55,7 +55,7 @@ export const registerVerifyHandler =
       ),
       Effect.bind('expectedChallenge', ({ registrationResponse }) =>
         Option.fromNullable(
-          request.registrationChallenge.getChallenge(registrationResponse.id)
+          request.registrationChallenge.getChallenge(registrationResponse.email)
         )
       ),
       Effect.bind(
@@ -91,7 +91,7 @@ export const registerVerifyHandler =
               }
               result.registrationInfo;
               console.log('result', result);
-              return result;
+              return { result, email: registrationResponse.email };
             })
           )
       )
@@ -104,7 +104,11 @@ export const registerVerifyHandler =
         console.log(error);
         reply.status(500).send({ message: 'Internal server error' });
       },
-      onSuccess: (credentialCreationOptions) =>
-        reply.send(credentialCreationOptions),
+      onSuccess: (credentialCreationOptions) => {
+        const token = request.fastify.jwt.sign({
+          email: credentialCreationOptions.email,
+        });
+        reply.send({ token });
+      },
     });
   };

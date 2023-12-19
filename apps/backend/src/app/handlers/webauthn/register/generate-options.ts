@@ -1,9 +1,6 @@
 import { FastifyReply, RouteHandlerMethod } from 'fastify';
 import * as S from '@effect/schema/Schema';
-import {
-  CredentialCreationOptionsRequest,
-  RegistrationResponseJSON,
-} from '@passkey-example/api-schema';
+import { CredentialCreationOptionsRequest } from '@passkey-example/api-schema';
 import { Cause, Effect, Either, Exit, pipe } from 'effect';
 import {
   generateRegistrationOptions,
