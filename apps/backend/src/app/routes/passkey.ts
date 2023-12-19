@@ -17,4 +17,14 @@ export default async (fastify: FastifyInstance) => {
   fastify.get('/webauthn/authenticate/verify', async function () {
     return { message: 'authenticate/verify' };
   });
+
+  fastify.get('/.well-known/apple-app-site-association', async (request) => {
+    return {
+      applinks: {},
+      webcredentials: {
+        apps: [`${request.webauthnConfig.iosTeamId}.com.passkey.example`],
+      },
+      appclips: {},
+    };
+  });
 };

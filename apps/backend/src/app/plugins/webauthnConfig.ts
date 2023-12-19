@@ -16,8 +16,7 @@ const WebauthnConfigOptions = S.struct({
   rpId: S.string,
   rpName: S.string,
   rpOrigins: S.array(S.string).pipe(S.minItems(1)),
-  //rpExpectedOrigin: S.string,
-  //androidCertFingerprint: S.union(S.string, S.undefined),
+  iosTeamId: S.string,
 });
 
 export interface WebauthnConfigOptions
@@ -41,7 +40,7 @@ const webauthnConfigPluginAsync: FastifyPluginAsync<
     rpId: process.env.WEBAUTHN_RPID,
     rpOrigins: mergedOrigins,
     rpName: process.env.WEBAUTHN_RPNAME,
-    //androidCertFingerprint: process.env.WEBAUTHN_ANDROID_CERT_FINGERPRINTS,
+    iosTeamId: process.env.WEBAUTHN_IOS_TEAM_ID,
   });
   if (Either.isLeft(config)) {
     console.error(

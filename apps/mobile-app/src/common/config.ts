@@ -1,6 +1,9 @@
 import * as S from '@effect/schema/Schema';
 
-console.log(process.env.EXPO_PUBLIC_ENDPOINT);
+if (!process.env.EXPO_PUBLIC_BACKEND_DOMAIN)
+  throw new Error('EXPO_PUBLIC_BACKEND_DOMAIN not set, please add it to .env');
 export const config = {
-  endpoint: S.parseSync(S.string)(process.env.EXPO_PUBLIC_ENDPOINT),
+  endpoint: `https://${S.parseSync(S.string)(
+    process.env.EXPO_PUBLIC_BACKEND_DOMAIN
+  )}`,
 };

@@ -58,3 +58,5 @@ cache/
 
 apps/mobile-app-e2e/artifacts
 apps/backend/.env
+
+apps/mobile-app/.env
