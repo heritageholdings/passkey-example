@@ -16,6 +16,7 @@
     "react-native-svg-transformer": "*",
     "react": "*",
     "expo-splash-screen": "~0.20.5",
+    "expo-dev-client": "*",
     "expo-status-bar": "~1.6.0",
     "@babel/core": "*",
     "@effect/schema": "*",
@@ -24,7 +25,13 @@
     "@nx/devkit": "*",
     "@react-navigation/native": "*",
     "react-native-screens": "*",
-    "@react-navigation/native-stack": "*"
+    "@react-navigation/native-stack": "*",
+    "text-encoding": "*",
+    "axios": "*",
+    "effect": "*",
+    "react-native-passkey": "*",
+    "base64url": "*",
+    "buffer": "*"
   },
   "scripts": {
     "eas-build-pre-install": "cd ../../ && node tools/scripts/eas-build-pre-install.mjs . apps/mobile-app && cp yarn.lock apps/mobile-app",

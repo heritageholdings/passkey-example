@@ -49,7 +49,7 @@ export const CredentialCreationOptions = S.struct({
   rp: PublicKeyCredentialRpEntity,
   user: PublicKeyCredentialUserEntity,
   challenge: S.string,
-  pubKeyCredParams: S.array(PublicKeyCredentialParameters),
+  pubKeyCredParams: S.mutable(S.array(PublicKeyCredentialParameters)),
   // should be optional, changed for library compatibility
   timeout: S.number,
   // should be optional, changed for library compatibility
@@ -57,8 +57,10 @@ export const CredentialCreationOptions = S.struct({
   // should be optional, changed for library compatibility
   authenticatorSelection: AuthenticatorSelectionCriteria,
 
-  excludeCredentials: S.array(PublicKeyCredentialDescriptor).pipe(S.optional),
-  attestationFormats: S.array(S.string).pipe(S.optional),
+  excludeCredentials: S.mutable(S.array(PublicKeyCredentialDescriptor)).pipe(
+    S.optional
+  ),
+  attestationFormats: S.mutable(S.array(S.string)).pipe(S.optional),
   extensions: S.record(S.string, S.unknown).pipe(S.optional),
 });
 
@@ -99,9 +101,11 @@ export const PublicKeyCredentialRequestOptions = S.struct({
   timeout: S.number,
   userVerification: UserVerificationRequirement,
 
-  allowCredentials: S.array(PublicKeyCredentialDescriptor).pipe(S.optional),
+  allowCredentials: S.mutable(S.array(PublicKeyCredentialDescriptor)).pipe(
+    S.optional
+  ),
   attestation: S.string.pipe(S.optional),
-  attestationFormats: S.array(S.string).pipe(S.optional),
+  attestationFormats: S.mutable(S.array(S.string)).pipe(S.optional),
   extensions: S.record(S.string, S.unknown).pipe(S.optional),
 });
 

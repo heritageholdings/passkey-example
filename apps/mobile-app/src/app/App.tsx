@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
-import 'text-encoding-polyfill';
+
 import React, { useRef, useState } from 'react';
 import {
   SafeAreaView,
@@ -14,12 +14,6 @@ import {
 import Svg, { G, Path } from 'react-native-svg';
 import * as S from '@effect/schema/Schema';
 import { CredentialCreationOptionsRequest } from '@passkey-example/api-schema';
-
-// const CredentialCreationOptionsRequest = S.struct({
-//   email: S.string.pipe(
-//     S.pattern(new RegExp('^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$'))
-//   ),
-// });
 
 export const App = () => {
   const [whatsNextYCoord, setWhatsNextYCoord] = useState<number>(0);

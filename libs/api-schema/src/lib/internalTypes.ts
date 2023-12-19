@@ -71,7 +71,7 @@ export const PublicKeyCredentialParameters = S.struct({
 export const PublicKeyCredentialDescriptor = S.struct({
   id: S.string,
   type: S.literal('public-key'),
-  transports: S.array(AuthenticatorTransportFuture).pipe(S.optional),
+  transports: S.mutable(S.array(AuthenticatorTransportFuture)).pipe(S.optional),
 });
 
 // https://w3c.github.io/webauthn/#dictdef-authenticatorselectioncriteria
@@ -88,7 +88,7 @@ export const AuthenticatorAttestationResponseJSON = S.struct({
   authenticatorData: S.string,
   publicKeyAlgorithm: S.number,
   attestationObject: S.string,
-  transports: S.array(AuthenticatorTransportFuture),
+  transports: S.mutable(S.array(AuthenticatorTransportFuture)),
   publicKey: S.string.pipe(S.optional),
 });
 
