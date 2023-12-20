@@ -1,40 +1,38 @@
 import { RouteHandlerMethod } from 'fastify';
-import { Effect, Exit, Option, pipe } from 'effect';
+import { Effect, Either, Exit, pipe } from 'effect';
 import * as S from '@effect/schema/Schema';
 import { RegistrationResponseJSON } from '@passkey-example/api-schema';
-import { User } from '../../../plugins/localDatabase';
 import {
+  ChallengesDatabase,
+  User,
+  UsersDatabase,
+} from '../../../plugins/localDatabase';
+import {
+  VerifiedRegistrationResponse,
   verifyRegistrationResponse,
   VerifyRegistrationResponseOpts,
 } from '@simplewebauthn/server';
 import { WebauthnConfigOptions } from '../../../plugins/webauthnConfig';
 
-type InvalidChallengeError = {
-  _tag: 'UserAlreadyExistsError';
-};
+class InvalidChallengeError {
+  public readonly _tag = 'InvalidChallengeError';
+}
 
-// const verifyRegistrationChallenge =
-//   (registrationChallenge: ChallengesDatabase) =>
-//   (registrationResponse: RegistrationResponseJSON) => {
-//     const asd = Option.fromNullable(
-//       registrationChallenge.getChallenge(registrationResponse.id)
-//     ).pipe(Either.fromOption(() => ({ _tag: 'InvalidChallengeError' })),
-//         Either.flatMap(challenge => {
-//             challenge !== registrationResponse.
-//         });
-//
-//     const challenge = registrationChallenge.getChallenge(
-//       registrationResponse.rawId
-//     );
-//
-//     if (!challenge) {
-//       console.error(
-//         `Failed to verify registration: challenge not found for ${registrationResponse.rawId}`
-//       );
-//       return registrationResponse;
-//     }
-//   };
+class VerificationFailedError {
+  public readonly _tag = 'VerificationFailedError';
+}
 
+const getExpectedChallenge =
+  (challengeDatabase: ChallengesDatabase) =>
+  ({
+    registrationResponse,
+  }: {
+    registrationResponse: RegistrationResponseJSON;
+  }) =>
+    Either.fromNullable(
+      challengeDatabase.getChallenge(registrationResponse.email),
+      () => new InvalidChallengeError()
+    );
 const prepareVerifyRegistrationResponse = (
   registrationResponse: RegistrationResponseJSON,
   config: WebauthnConfigOptions,
@@ -47,17 +45,36 @@ const prepareVerifyRegistrationResponse = (
   requireUserVerification: true,
 });
 
+const registerNewAuthenticator = (
+  email: string,
+  registrationInfo: NonNullable<
+    VerifiedRegistrationResponse['registrationInfo']
+  >,
+  usersDatabase: UsersDatabase
+) => {
+  const user = usersDatabase.getUser(email);
+  if (user) {
+    user.addAuthenticator(registrationInfo);
+  } else {
+    const newUser = new User(email);
+    newUser.addAuthenticator(registrationInfo);
+    usersDatabase.addUser(newUser);
+  }
+};
+
 export const registerVerifyHandler =
   (): RouteHandlerMethod => async (request, reply) => {
     const verifyRegistration = Effect.Do.pipe(
+      // Verify the shape of the incoming payload
       Effect.bind('registrationResponse', () =>
         S.parseEither(RegistrationResponseJSON)(request.body)
       ),
-      Effect.bind('expectedChallenge', ({ registrationResponse }) =>
-        Option.fromNullable(
-          request.registrationChallenge.getChallenge(registrationResponse.email)
-        )
+      // retrieve the expected challenge from the database
+      Effect.bind(
+        'expectedChallenge',
+        getExpectedChallenge(request.registrationChallenge)
       ),
+      // prepare the options args for the verification function
       Effect.bind(
         'verifyRegistrationResponseOpts',
         ({ registrationResponse, expectedChallenge }) =>
@@ -73,41 +90,47 @@ export const registerVerifyHandler =
       Effect.flatMap(
         ({ registrationResponse, verifyRegistrationResponseOpts }) =>
           pipe(
+            // verify the registration response with the simplewebauthn library
             Effect.tryPromise(() =>
               verifyRegistrationResponse(verifyRegistrationResponseOpts)
             ),
-            Effect.map((result) => {
-              if (result.verified && result.registrationInfo) {
-                const userId = registrationResponse.id;
-                const user = request.usersDatabase.getUser(userId);
-                if (user) {
-                  user.addAuthenticator(result.registrationInfo);
-                } else {
-                  const newUser = new User(registrationResponse.id);
-                  newUser.addAuthenticator(result.registrationInfo);
-                  request.usersDatabase.addUser(newUser);
-                }
-                request.registrationChallenge.removeChallenge(userId);
-              }
-              result.registrationInfo;
-              console.log('result', result);
-              return { result, email: registrationResponse.email };
-            })
+            // check if the verification was successful
+            Effect.flatMap((result) =>
+              result.verified && result.registrationInfo
+                ? Effect.succeed(result.registrationInfo)
+                : Effect.fail(new VerificationFailedError())
+            ),
+            // remove the challenge from the database
+            Effect.tap(() =>
+              request.registrationChallenge.removeChallenge(
+                registrationResponse.email
+              )
+            ),
+            // register the new authenticator
+            Effect.tap((registrationInfo) =>
+              registerNewAuthenticator(
+                registrationResponse.email,
+                registrationInfo,
+                request.usersDatabase
+              )
+            ),
+            // sign a JWT token as a response
+            Effect.map(() =>
+              request.fastify.jwt.sign({
+                email: registrationResponse.email,
+              })
+            )
           )
       )
     );
 
     const operationResults = await Effect.runPromiseExit(verifyRegistration);
-
     Exit.match(operationResults, {
       onFailure: (error) => {
         console.log(error);
         reply.status(500).send({ message: 'Internal server error' });
       },
-      onSuccess: (credentialCreationOptions) => {
-        const token = request.fastify.jwt.sign({
-          email: credentialCreationOptions.email,
-        });
+      onSuccess: (token) => {
         reply.send({ token });
       },
     });
