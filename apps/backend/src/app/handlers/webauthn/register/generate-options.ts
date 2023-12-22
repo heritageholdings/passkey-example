@@ -35,8 +35,8 @@ const prepareRegistrationOptions =
     // Don't prompt users for additional information about the authenticator
     // (Recommended for smoother UX)
     attestationType: 'none',
-    // Prevent users from re-registering existing authenticators
-    // excludeCredentials, TODO: implement
+    // Prevent users from re-registering existing authenticators (in this example we allow the user to register only one authenticator so we don't provide the list of the existing ones)
+    // excludeCredentials,
     authenticatorSelection: {
       residentKey: 'required',
       userVerification: 'required',

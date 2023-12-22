@@ -46,18 +46,24 @@ const prepareVerifyRegistrationResponse = (
 });
 
 const registerNewAuthenticator = (
-  email: string,
+  registrationResponse: RegistrationResponseJSON,
   registrationInfo: NonNullable<
     VerifiedRegistrationResponse['registrationInfo']
   >,
   usersDatabase: UsersDatabase
 ) => {
+  const { email } = registrationResponse;
+  const authenticator = {
+    ...registrationInfo,
+    transports: registrationResponse.response.transports ?? [],
+  };
+
   const user = usersDatabase.getUser(email);
   if (user) {
-    user.addAuthenticator(registrationInfo);
+    user.addAuthenticator(authenticator);
   } else {
     const newUser = new User(email);
-    newUser.addAuthenticator(registrationInfo);
+    newUser.addAuthenticator(authenticator);
     usersDatabase.addUser(newUser);
   }
 };
@@ -109,7 +115,7 @@ export const registerVerifyHandler =
             // register the new authenticator
             Effect.tap((registrationInfo) =>
               registerNewAuthenticator(
-                registrationResponse.email,
+                registrationResponse,
                 registrationInfo,
                 request.usersDatabase
               )

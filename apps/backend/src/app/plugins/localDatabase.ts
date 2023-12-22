@@ -2,6 +2,7 @@ import fp from 'fastify-plugin';
 import { FastifyPluginAsync } from 'fastify';
 import { VerifiedRegistrationResponse } from '@simplewebauthn/server';
 import base64url from 'base64url';
+import { AuthenticatorTransportFuture } from '@simplewebauthn/typescript-types';
 
 // using declaration merging, add your plugin props to the appropriate fastify interfaces
 // if prop type is defined here, the value will be typechecked when you call decorate{,Request,Reply}
@@ -13,9 +14,11 @@ declare module 'fastify' {
   }
 }
 
-type Authenticator = NonNullable<
+export type Authenticator = NonNullable<
   VerifiedRegistrationResponse['registrationInfo']
->;
+> & {
+  transports?: AuthenticatorTransportFuture[];
+};
 
 export class User {
   public readonly email: string;
@@ -35,6 +38,10 @@ export class User {
 
   public getAuthenticator(rawId: string): Authenticator | undefined {
     return this.authenticators.get(rawId);
+  }
+
+  public getAllAuthenticators(): Authenticator[] {
+    return Array.from(this.authenticators.values());
   }
 }
 
