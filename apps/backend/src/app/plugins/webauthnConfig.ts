@@ -49,7 +49,10 @@ const webauthnConfigPluginAsync: FastifyPluginAsync<
     );
     exit(1);
   }
-  fastify.decorateRequest('webauthnConfig', config.right);
+
+  fastify.addHook('onRequest', async (req) => {
+    req.webauthnConfig = config.right;
+  });
 };
 
 // export plugin using fastify-plugin

@@ -46,12 +46,8 @@ const prepareAuthenticationOptions =
 
 const storeAuthenticationChallenge =
   (authenticationChallenges: ChallengesDatabase, email: string) =>
-  (options: PublicKeyCredentialRequestOptionsJSON) => {
-    console.log(options);
+  (options: PublicKeyCredentialRequestOptionsJSON) =>
     authenticationChallenges.addChallenge(email, options.challenge);
-    return options;
-  };
-
 export const authenticateGenerateOptionsHandler =
   (): RouteHandlerMethod => async (request, reply) => {
     const createAuthenticationChallenge = pipe(

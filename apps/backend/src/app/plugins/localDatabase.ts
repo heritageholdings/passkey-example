@@ -76,9 +76,15 @@ export class ChallengesDatabase {
 const webauthnConfigPluginAsync: FastifyPluginAsync<UsersDatabase> = async (
   fastify
 ) => {
-  fastify.decorateRequest('usersDatabase', new UsersDatabase());
-  fastify.decorateRequest('registrationChallenge', new ChallengesDatabase());
-  fastify.decorateRequest('authenticationChallenge', new ChallengesDatabase());
+  const usersDatabase = new UsersDatabase();
+  const registrationChallenge = new ChallengesDatabase();
+  const authenticationChallenge = new ChallengesDatabase();
+
+  fastify.addHook('onRequest', async (req) => {
+    req.usersDatabase = usersDatabase;
+    req.registrationChallenge = registrationChallenge;
+    req.authenticationChallenge = authenticationChallenge;
+  });
 };
 
 // export plugin using fastify-plugin
