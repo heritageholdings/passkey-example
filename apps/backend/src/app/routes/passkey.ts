@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { registerGenerateOptionsHandler } from '../handlers/webauthn/register/generate-options';
 import { registerVerifyHandler } from '../handlers/webauthn/register/verify';
+import { authenticateGenerateOptionsHandler } from '../handlers/webauthn/authenticate/generate-options';
 
 export default async (fastify: FastifyInstance) => {
   fastify.post(
@@ -10,13 +11,15 @@ export default async (fastify: FastifyInstance) => {
 
   fastify.post('/webauthn/register/verify', registerVerifyHandler());
 
-  fastify.get('/webauthn/authenticate/generate-options', async function () {
-    return { message: 'authenticate/generate-options' };
-  });
+  fastify.post(
+    '/webauthn/authenticate/generate-options',
+    authenticateGenerateOptionsHandler()
+  );
 
-  fastify.get('/webauthn/authenticate/verify', async function () {
-    return { message: 'authenticate/verify' };
-  });
+  fastify.get(
+    '/webauthn/authenticate/verify',
+    authenticateGenerateOptionsHandler()
+  );
 
   fastify.get('/.well-known/apple-app-site-association', async (request) => {
     return {
