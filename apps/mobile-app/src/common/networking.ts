@@ -1,7 +1,10 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { config } from './config';
 import { Effect } from 'effect';
-import { RegistrationResponseJSON } from '@passkey-example/api-schema';
+import {
+  AuthenticationResponseJSON,
+  RegistrationResponseJSON,
+} from '@passkey-example/api-schema';
 
 export type NetworkingError = {
   __tag: 'NetworkingError';
@@ -26,7 +29,7 @@ export const axiosPost = (
   Effect.tryPromise({
     try: () => axios.post(url, data, config),
     catch: (unknown) => {
-      console.log(JSON.stringify(unknown));
+      // console.log(JSON.stringify(unknown));
       return isAxiosError(unknown)
         ? {
             _tag: 'NetworkingError',
@@ -53,4 +56,22 @@ export const axiosVerifyRegistrationOptions = (
 ) => {
   const url = new URL('webauthn/register/verify', config.endpoint);
   return axiosPost(url.href, registrationResponse);
+};
+
+export const axiosGenerateAuthenticationOptions = (email: string) => {
+  const url = new URL(
+    'webauthn/authenticate/generate-options',
+    config.endpoint
+  );
+  const data = {
+    email,
+  };
+  return axiosPost(url.href, data);
+};
+
+export const axiosVerifyAuthenticationOptions = (
+  authResponse: AuthenticationResponseJSON
+) => {
+  const url = new URL('webauthn/authenticate/verify', config.endpoint);
+  return axiosPost(url.href, authResponse);
 };
