@@ -13,14 +13,7 @@ import {
   VerifyRegistrationResponseOpts,
 } from '@simplewebauthn/server';
 import { WebauthnConfigOptions } from '../../../plugins/webauthnConfig';
-
-class InvalidChallengeError {
-  public readonly _tag = 'InvalidChallengeError';
-}
-
-class VerificationFailedError {
-  public readonly _tag = 'VerificationFailedError';
-}
+import { InvalidChallengeError, VerificationFailedError } from '../errors';
 
 const getExpectedChallenge =
   (challengeDatabase: ChallengesDatabase) =>
@@ -80,6 +73,12 @@ export const registerVerifyHandler =
         'expectedChallenge',
         getExpectedChallenge(request.registrationChallenge)
       ),
+      // Remove the challenge from the database
+      Effect.tap(({ registrationResponse }) =>
+        request.registrationChallenge.removeChallenge(
+          registrationResponse.email
+        )
+      ),
       // prepare the options args for the verification function
       Effect.bind(
         'verifyRegistrationResponseOpts',
@@ -91,8 +90,7 @@ export const registerVerifyHandler =
               expectedChallenge
             )
           )
-      )
-    ).pipe(
+      ),
       Effect.flatMap(
         ({ registrationResponse, verifyRegistrationResponseOpts }) =>
           pipe(
@@ -105,12 +103,6 @@ export const registerVerifyHandler =
               result.verified && result.registrationInfo
                 ? Effect.succeed(result.registrationInfo)
                 : Effect.fail(new VerificationFailedError())
-            ),
-            // remove the challenge from the database
-            Effect.tap(() =>
-              request.registrationChallenge.removeChallenge(
-                registrationResponse.email
-              )
             ),
             // register the new authenticator
             Effect.tap((registrationInfo) =>

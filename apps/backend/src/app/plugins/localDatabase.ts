@@ -40,6 +40,14 @@ export class User {
     return this.authenticators.get(rawId);
   }
 
+  public updateAuthenticator(
+    credentialID: Uint8Array,
+    authenticator: Authenticator
+  ): void {
+    const credentialIdBase64url = base64url.encode(Buffer.from(credentialID));
+    this.authenticators.set(credentialIdBase64url, authenticator);
+  }
+
   public getAllAuthenticators(): Authenticator[] {
     return Array.from(this.authenticators.values());
   }

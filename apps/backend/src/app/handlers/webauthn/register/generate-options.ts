@@ -12,7 +12,7 @@ import {
   UsersDatabase,
 } from '../../../plugins/localDatabase';
 import { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/server/script/deps';
-import { ParseError } from '@effect/schema/dist/dts/ParseResult';
+import { ParseError } from '@effect/schema/ParseResult';
 
 type UserAlreadyExistsError = {
   _tag: 'UserAlreadyExistsError';
