@@ -48,7 +48,7 @@ const convertToAuthenticationResponseJSON = (
   type: 'public-key',
 });
 
-export const AuthenticatePasskey = (email: string) =>
+export const authenticatePasskey = (email: string) =>
   pipe(
     email,
     axiosGenerateAuthenticationOptions,

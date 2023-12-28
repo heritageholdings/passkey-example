@@ -5,5 +5,8 @@ import fastifyJwt from '@fastify/jwt';
 export default fp(async function (fastify: FastifyInstance) {
   fastify.register(fastifyJwt, {
     secret: 'com.passkey.example.superSecret',
+    sign: {
+      expiresIn: '10m',
+    },
   });
 });

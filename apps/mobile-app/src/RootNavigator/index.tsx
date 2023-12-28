@@ -8,9 +8,15 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const RootNavigator: React.FC = () => {
   return (
-    <Stack.Navigator initialRouteName="Home">
+    <Stack.Navigator initialRouteName="Authentication">
+      <Stack.Screen
+        name="Authentication"
+        component={AuthenticationScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
       <Stack.Screen name="Home" component={HomeScreen} />
-      <Stack.Screen name="Authentication" component={AuthenticationScreen} />
       <Stack.Screen name="Registration" component={RegistrationScreen} />
     </Stack.Navigator>
   );

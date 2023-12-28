@@ -1,7 +1,7 @@
 import { Button, Text, View } from 'react-native';
-import { RegisterPasskey } from '../../common/passkey/register';
+import { registerPasskey } from '../../common/passkey/register';
 import { Effect, Exit } from 'effect';
-import { AuthenticatePasskey } from '../../common/passkey/authenticate';
+import { authenticatePasskey } from '../../common/passkey/authenticate';
 
 export const HomeScreen: React.FC = () => {
   return (
@@ -11,7 +11,7 @@ export const HomeScreen: React.FC = () => {
         title={'Register'}
         onPress={async () => {
           const operationResults = await Effect.runPromiseExit(
-            RegisterPasskey('asd@asd.it')
+            registerPasskey('asd@asd.it')
           );
 
           Exit.match(operationResults, {
@@ -25,7 +25,7 @@ export const HomeScreen: React.FC = () => {
         title={'Authenticate'}
         onPress={async () => {
           const operationResults = await Effect.runPromiseExit(
-            AuthenticatePasskey('asd@asd.it')
+            authenticatePasskey('asd@asd.it')
           );
 
           Exit.match(operationResults, {

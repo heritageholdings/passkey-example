@@ -47,7 +47,7 @@ const convertToRegistrationResponse =
     email,
   });
 
-export const RegisterPasskey = (email: string) => {
+export const registerPasskey = (email: string) => {
   return pipe(
     email,
     axiosGenerateRegistrationOptions,
