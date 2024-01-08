@@ -1,5 +1,6 @@
 import {
   ActivityIndicator,
+  Image,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -13,7 +14,8 @@ import { axiosProfile } from '../../common/networking';
 import { Effect, Exit, pipe } from 'effect';
 import Toast from 'react-native-toast-message';
 import * as S from '@effect/schema/Schema';
-import { JwtTokenResponse, ProfileResponse } from '@passkey-example/api-schema';
+import { ProfileResponse } from '@passkey-example/api-schema';
+import Icon from '../../../assets/splash.png';
 
 const styles = StyleSheet.create({
   center: { alignSelf: 'center' },
@@ -21,6 +23,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginVertical: 16,
+  },
+  image: {
+    width: 250,
+    height: 250,
+    marginTop: 16,
   },
 });
 
@@ -80,6 +87,7 @@ export const HomeScreen: React.FC = () => {
         {loading && <ActivityIndicator size="large" />}
         {profile && !loading && (
           <>
+            <Image source={Icon} style={[styles.image, styles.center]} />
             <Text style={[styles.center, styles.title]}>
               You're logged in {profile.email}!
             </Text>
