@@ -41,6 +41,25 @@ export const CredentialCreationOptionsRequest = S.struct({
 });
 
 /**
+ * The payload returned after the registration or authentication verification
+ */
+export const JwtTokenResponse = S.struct({
+  token: S.string,
+});
+
+/**
+ * The body returned by the /profile endpoint after a successful authentication
+ */
+export const ProfileResponse = S.struct({
+  email: S.string,
+  authenticators: S.array(S.struct({ credentialID: S.string })).pipe(
+    S.optional
+  ),
+});
+
+export type ProfileResponse = S.Schema.To<typeof ProfileResponse>;
+
+/**
  * Registration Challenge request:
  * The server send to the client the challenge in order to register a new passkey
  * see https://w3c.github.io/webauthn/#dictionary-makecredentialoptions

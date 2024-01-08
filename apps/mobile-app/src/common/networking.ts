@@ -6,19 +6,33 @@ import {
   RegistrationResponseJSON,
 } from '@passkey-example/api-schema';
 
-export type NetworkingError = {
-  __tag: 'NetworkingError';
-  status?: string;
-  message: string;
-};
+export class NetworkingError {
+  public readonly _tag = 'NetworkingError';
+  public readonly status: number | undefined;
+  public readonly message: string;
+  constructor(message: string, status: number | undefined = undefined) {
+    this.message = message;
+    this.status = status;
+  }
+}
+
+const client = axios.create({
+  baseURL: config.endpoint,
+});
 
 const isAxiosError = (
   e: unknown
-): e is { status?: string; message: string } => {
-  if (typeof e === 'object' && e !== null && 'message' in e) {
-    return 'message' in e;
-  }
-  return false;
+): e is { response: { status: number }; message: string } => {
+  return (
+    typeof e === 'object' &&
+    e !== null &&
+    'message' in e &&
+    'response' in e &&
+    typeof e.response === 'object' &&
+    e.response !== null &&
+    'status' in e.response &&
+    typeof e.response.status === 'number'
+  );
 };
 
 export const axiosPost = (
@@ -27,51 +41,49 @@ export const axiosPost = (
   config?: AxiosRequestConfig<unknown>
 ) =>
   Effect.tryPromise({
-    try: () => axios.post(url, data, config),
+    try: () => client.post(url, data, config),
     catch: (unknown) => {
-      // console.log(JSON.stringify(unknown));
       return isAxiosError(unknown)
-        ? {
-            _tag: 'NetworkingError',
-            status: unknown.status,
-            message: unknown.message,
-          }
-        : {
-            _tag: 'NetworkingError',
-            message: 'Unexpected network error',
-          };
+        ? new NetworkingError(unknown.message, unknown.response.status)
+        : new NetworkingError('Unexpected network error');
+    },
+  });
+
+export const axiosGet = (url: string, config?: AxiosRequestConfig<unknown>) =>
+  Effect.tryPromise({
+    try: () => client.get(url, config),
+    catch: (unknown) => {
+      return isAxiosError(unknown)
+        ? new NetworkingError(unknown.message, unknown.response.status)
+        : new NetworkingError('Unexpected network error');
     },
   });
 
 export const axiosGenerateRegistrationOptions = (email: string) => {
-  const url = new URL('webauthn/register/generate-options', config.endpoint);
   const data = {
     email,
   };
-  return axiosPost(url.href, data);
+  return axiosPost('webauthn/register/generate-options', data);
 };
 
 export const axiosVerifyRegistrationOptions = (
   registrationResponse: RegistrationResponseJSON
 ) => {
-  const url = new URL('webauthn/register/verify', config.endpoint);
-  return axiosPost(url.href, registrationResponse);
+  return axiosPost('webauthn/register/verify', registrationResponse);
 };
 
 export const axiosGenerateAuthenticationOptions = (email: string) => {
-  const url = new URL(
-    'webauthn/authenticate/generate-options',
-    config.endpoint
-  );
   const data = {
     email,
   };
-  return axiosPost(url.href, data);
+  return axiosPost('webauthn/authenticate/generate-options', data);
 };
 
 export const axiosVerifyAuthenticationOptions = (
   authResponse: AuthenticationResponseJSON
 ) => {
-  const url = new URL('webauthn/authenticate/verify', config.endpoint);
-  return axiosPost(url.href, authResponse);
+  return axiosPost('webauthn/authenticate/verify', authResponse);
 };
+
+export const axiosProfile = (jwt: string) =>
+  axiosGet('profile', { headers: { Authorization: `Bearer ${jwt}` } });

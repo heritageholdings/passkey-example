@@ -6,6 +6,7 @@ import {
 import * as S from '@effect/schema/Schema';
 import {
   CredentialCreationOptions,
+  JwtTokenResponse,
   RegistrationResponseJSON,
 } from '@passkey-example/api-schema';
 import {
@@ -57,6 +58,7 @@ export const registerPasskey = (email: string) => {
     Effect.flatMap(nativeRegisterPasskey),
     Effect.map(convertToRegistrationResponse(email)),
     Effect.flatMap(axiosVerifyRegistrationOptions),
-    Effect.map((response) => response.data)
+    Effect.map((response) => response.data),
+    Effect.flatMap(S.parseEither(JwtTokenResponse))
   );
 };

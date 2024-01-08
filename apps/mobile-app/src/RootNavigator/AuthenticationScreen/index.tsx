@@ -9,6 +9,11 @@ import {
 import React from 'react';
 import { Effect, Exit } from 'effect';
 import { registerPasskey } from '../../common/passkey/register';
+import { useSetAtom } from 'jotai';
+import { jwtAtom } from '../../common/state/jwt';
+import { authenticatePasskey } from '../../common/passkey/authenticate';
+import Toast from 'react-native-toast-message';
+import { Button } from '../../common/components/Button';
 
 const styles = StyleSheet.create({
   input: {
@@ -19,54 +24,25 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderColor: '#6a6a6a',
   },
-  button: {
-    backgroundColor: '#2E5EB8',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 48,
-    borderRadius: 8,
-    margin: 12,
-  },
-  buttonDisabled: {
-    backgroundColor: '#6a6a6a',
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
+  center: { alignSelf: 'center' },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginVertical: 16,
   },
 });
 
-type ButtonProps = { title: string } & Pick<
-  React.ComponentProps<typeof TouchableOpacity>,
-  'disabled' | 'onPress'
->;
-
-const Button: React.FC<ButtonProps> = ({ title, disabled, onPress }) => (
-  <TouchableOpacity
-    style={[styles.button, disabled ? styles.buttonDisabled : null]}
-    disabled={disabled}
-    onPress={onPress}
-  >
-    <Text style={styles.buttonText}>{title}</Text>
-  </TouchableOpacity>
-);
-
-const handleRegisterPasskey = async (email: string) => {
-  const operationResults = await Effect.runPromiseExit(registerPasskey(email));
-
-  Exit.match(operationResults, {
-    onFailure: (e) => console.error(e),
-    onSuccess: (response) => console.log('Success: ', response),
-  });
-};
-
 export const AuthenticationScreen: React.FC = () => {
   const [email, setEmail] = React.useState<string>('');
-  const buttonDisabled = email.length === 0;
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const setJwt = useSetAtom(jwtAtom);
+  const buttonDisabled = email.length === 0 && !loading;
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <View style={{ flex: 1 }} />
+      <View style={{ flex: 1 }}>
+        <Text style={[styles.title, styles.center]}>Passkey Example</Text>
+      </View>
       <View style={{ flex: 3 }}>
         <TextInput
           style={styles.input}
@@ -74,12 +50,52 @@ export const AuthenticationScreen: React.FC = () => {
           onChangeText={setEmail}
           value={email}
         />
-        <Button title={'Login'} disabled={buttonDisabled} />
-        <Text style={{ alignSelf: 'center' }}>or</Text>
+        <Button
+          title={'Login'}
+          disabled={buttonDisabled}
+          onPress={async () => {
+            setLoading(true);
+            const operationResults = await Effect.runPromiseExit(
+              authenticatePasskey(email)
+            );
+
+            Exit.match(operationResults, {
+              onFailure: (e) => {
+                console.error(e);
+                Toast.show({
+                  type: 'error',
+                  text1: 'Error',
+                  text2: `An error occurred, see the console for more details.`,
+                });
+              },
+              onSuccess: (response) => setJwt(response.token),
+            });
+            setLoading(false);
+          }}
+        />
+        <Text style={styles.center}>or</Text>
         <Button
           title={'Register'}
           disabled={buttonDisabled}
-          onPress={() => handleRegisterPasskey(email)}
+          onPress={async () => {
+            setLoading(true);
+            const operationResults = await Effect.runPromiseExit(
+              registerPasskey(email)
+            );
+
+            Exit.match(operationResults, {
+              onFailure: (e) => {
+                Toast.show({
+                  type: 'error',
+                  text1: 'Error',
+                  text2: `An error occurred, see the console for more details.`,
+                });
+                console.error(e);
+              },
+              onSuccess: (response) => setJwt(response.token),
+            });
+            setLoading(false);
+          }}
         />
       </View>
     </SafeAreaView>

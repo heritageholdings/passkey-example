@@ -24,6 +24,7 @@
     "fast-check": "^3.14.0",
     "fastify": "~4.13.0",
     "fastify-plugin": "~4.5.0",
+    "jotai": "^2.6.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.72.6",
@@ -32,6 +33,7 @@
     "react-native-screens": "~3.22.0",
     "react-native-svg": "13.9.0",
     "react-native-svg-transformer": "1.0.0",
+    "react-native-toast-message": "^2.2.0",
     "react-native-web": "~0.19.9",
     "text-encoding-polyfill": "^0.6.7",
     "tslib": "^2.3.0"

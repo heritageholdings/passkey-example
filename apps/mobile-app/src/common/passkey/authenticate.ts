@@ -6,6 +6,7 @@ import {
 import * as S from '@effect/schema/Schema';
 import {
   AuthenticationResponseJSON,
+  JwtTokenResponse,
   PublicKeyCredentialRequestOptions,
 } from '@passkey-example/api-schema';
 import {
@@ -60,5 +61,6 @@ export const authenticatePasskey = (email: string) =>
       convertToAuthenticationResponseJSON(email, response)
     ),
     Effect.flatMap(axiosVerifyAuthenticationOptions),
-    Effect.map((response) => response.data)
+    Effect.map((response) => response.data),
+    Effect.flatMap(S.parseEither(JwtTokenResponse))
   );

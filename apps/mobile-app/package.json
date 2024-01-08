@@ -31,7 +31,9 @@
     "effect": "*",
     "react-native-passkey": "*",
     "base64url": "*",
-    "buffer": "*"
+    "buffer": "*",
+    "jotai": "*",
+    "react-native-toast-message": "*"
   },
   "scripts": {
     "eas-build-pre-install": "cd ../../ && node tools/scripts/eas-build-pre-install.mjs . apps/mobile-app && cp yarn.lock apps/mobile-app",
