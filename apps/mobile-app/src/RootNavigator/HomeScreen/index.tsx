@@ -92,7 +92,8 @@ export const HomeScreen: React.FC = () => {
               You're logged in {profile.email}!
             </Text>
             <Text style={[styles.center]}>
-              You've registered {profile.authenticators?.length ?? 0} passkeys:
+              You've registered {profile.authenticators?.length ?? 0} passkey
+              {(profile.authenticators?.length ?? 0) > 1 ? 's' : ''}:
             </Text>
             {profile.authenticators?.map((authenticator) => (
               <Text key={authenticator.credentialID} style={[styles.center]}>
