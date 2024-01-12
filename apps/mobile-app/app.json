@@ -37,9 +37,19 @@
         {
           "skipProguard": false,
           "subdomains": [
-            "10.0.2.2",
+            "192.168.178.56",
             "localhost"
           ]
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 34,
+            "targetSdkVersion": 34,
+            "buildToolsVersion": "34.0.0"
+          }
         }
       ]
     ]

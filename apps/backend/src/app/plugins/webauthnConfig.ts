@@ -2,7 +2,8 @@ import { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 import * as S from '@effect/schema/Schema';
 import { exit } from 'process';
-import { Effect, Either, Option } from 'effect';
+import { Effect, Either, Option, pipe } from 'effect';
+import base64url from 'base64url';
 
 // using declaration merging, add your plugin props to the appropriate fastify interfaces
 // if prop type is defined here, the value will be typechecked when you call decorate{,Request,Reply}
@@ -17,6 +18,7 @@ const WebauthnConfigOptions = S.struct({
   rpName: S.string,
   rpOrigins: S.array(S.string).pipe(S.minItems(1)),
   iosTeamId: S.string,
+  androidCertFingerprint: S.optional(S.string),
 });
 
 export interface WebauthnConfigOptions
@@ -27,7 +29,17 @@ const webauthnConfigPluginAsync: FastifyPluginAsync<
   WebauthnConfigOptions
 > = async (fastify) => {
   const rpOrigins = process.env.WEBAUTHN_RPORIGIN?.split(',');
-  const androidCertFingerprint = process.env.WEBAUTHN_ANDROID_CERT_FINGERPRINTS;
+
+  // Convert from hex string to base64url
+  const androidCertFingerprint = pipe(
+    Option.fromNullable(process.env.WEBAUTHN_ANDROID_CERT_FINGERPRINTS),
+    Option.map((fingerprint) => fingerprint.replace(new RegExp(':', 'g'), '')),
+    Option.map((fingerprint) => Buffer.from(fingerprint, 'hex')),
+    Option.map(base64url.encode),
+    Option.getOrUndefined
+  );
+
+  console.log(androidCertFingerprint);
 
   const mergedOrigins = [
     ...(rpOrigins ? rpOrigins : []),
@@ -41,6 +53,7 @@ const webauthnConfigPluginAsync: FastifyPluginAsync<
     rpOrigins: mergedOrigins,
     rpName: process.env.WEBAUTHN_RPNAME,
     iosTeamId: process.env.WEBAUTHN_IOS_TEAM_ID,
+    androidCertFingerprint: process.env.WEBAUTHN_ANDROID_CERT_FINGERPRINTS,
   });
   if (Either.isLeft(config)) {
     console.error(

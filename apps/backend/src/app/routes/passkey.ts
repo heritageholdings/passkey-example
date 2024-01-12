@@ -28,4 +28,22 @@ export default async (fastify: FastifyInstance) => {
       appclips: {},
     };
   });
+
+  fastify.get('/.well-known/assetlinks.json', async (request) => {
+    return [
+      {
+        relation: [
+          'delegate_permission/common.handle_all_urls',
+          'delegate_permission/common.get_login_creds',
+        ],
+        target: {
+          namespace: 'android_app',
+          package_name: 'com.passkey.example',
+          sha256_cert_fingerprints: [
+            request.webauthnConfig.androidCertFingerprint,
+          ],
+        },
+      },
+    ];
+  });
 };
