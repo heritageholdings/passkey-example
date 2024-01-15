@@ -3,7 +3,7 @@
 An example repository showcasing an end to end example of passkey registration and authentication on a mobile app using WebAuthn and Expo.
 For further details about the implementation, the architecture and the technologies used, please refer to the related article (TBD insert link).
 
-Please remember that this repository is just a showcase intended to demonstrate the backend and frontend code required to implement passkey authentication and have been made some simplifications in order to make the code more readable and understandable and is not intended to be used in production. 
+Please remember that this repository serves as a showcase, offering a demonstration of both backend and frontend code essential for implementing passkey authentication. It is important to note that certain simplifications have been incorporated into the code to enhance readability and understanding and is not intended for production use as would be needed to adapt and enhance the code for production environments according to best practices and security standards.
 
 ## Prerequisites
 - [Node.js](https://nodejs.org/en/) (v18.8.0)
