@@ -3,6 +3,8 @@
 An example repository showcasing an end to end example of passkey registration and authentication on a mobile app using WebAuthn and Expo.
 For further details about the implementation, the architecture and the technologies used, please refer to the related article (TBD insert link).
 
+Please remember that this repository is just a showcase intended to demonstrate the backend and frontend code required to implement passkey authentication and have been made some simplifications in order to make the code more readable and understandable and is not intended to be used in production. 
+
 ## Prerequisites
 - [Node.js](https://nodejs.org/en/) (v18.8.0)
 - [Yarn](https://yarnpkg.com/) (v1.22.19)
@@ -31,7 +33,7 @@ For step-by-step guidance on installation, please visit the [Ngrok website](http
 
 # How to run
 
-If you have followed the setup steps, you should have the backend server running on your local machine and the mobile app running on your device.
+If you have followed the setup steps, you should have the backend server running on your local machine and the mobile app running on your device/emulator.
 The mobile app will allow you to register a new credential, inserting an email and pressing the `Register` button. 
 If everything is configured correctly, the new passkey registration ceremony should begin and the user is prompted to register a new passkey by authenticating via biometric
 
