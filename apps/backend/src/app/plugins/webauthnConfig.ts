@@ -2,7 +2,7 @@ import { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 import * as S from '@effect/schema/Schema';
 import { exit } from 'process';
-import { Effect, Either, Option, pipe } from 'effect';
+import { Either, Option, pipe } from 'effect';
 import base64url from 'base64url';
 
 // using declaration merging, add your plugin props to the appropriate fastify interfaces

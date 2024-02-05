@@ -51,7 +51,6 @@ const storeRegistrationChallenge =
   (registrationChallenge: ChallengesDatabase) =>
   (options: PublicKeyCredentialCreationOptionsJSON) => {
     registrationChallenge.addChallenge(options.user.id, options.challenge);
-    return options;
   };
 
 const handleErrors =
