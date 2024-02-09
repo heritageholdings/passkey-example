@@ -2,11 +2,7 @@ import { RouteHandlerMethod } from 'fastify';
 import { Effect, Either, Exit, pipe } from 'effect';
 import * as S from '@effect/schema/Schema';
 import { RegistrationResponseJSON } from '@passkey-example/api-schema';
-import {
-  ChallengesDatabase,
-  User,
-  UsersDatabase,
-} from '../../../plugins/localDatabase';
+import { User, UsersDatabase } from '../../../plugins/localDatabase';
 import {
   VerifiedRegistrationResponse,
   verifyRegistrationResponse,
@@ -14,18 +10,13 @@ import {
 } from '@simplewebauthn/server';
 import { WebauthnConfigOptions } from '../../../plugins/webauthnConfig';
 import { InvalidChallengeError, VerificationFailedError } from '../errors';
+import { FastifySessionObject } from '@fastify/session';
 
-const getExpectedChallenge =
-  (challengeDatabase: ChallengesDatabase) =>
-  ({
-    registrationResponse,
-  }: {
-    registrationResponse: RegistrationResponseJSON;
-  }) =>
-    Either.fromNullable(
-      challengeDatabase.getChallenge(registrationResponse.email),
-      () => new InvalidChallengeError()
-    );
+const getExpectedChallenge = (session: FastifySessionObject) => () =>
+  Either.fromNullable(
+    session.get('registrationChallenge'),
+    () => new InvalidChallengeError()
+  );
 const prepareVerifyRegistrationResponse = (
   registrationResponse: RegistrationResponseJSON,
   config: WebauthnConfigOptions,
@@ -69,16 +60,9 @@ export const registerVerifyHandler =
         S.parseEither(RegistrationResponseJSON)(request.body)
       ),
       // retrieve the expected challenge from the database
-      Effect.bind(
-        'expectedChallenge',
-        getExpectedChallenge(request.registrationChallenge)
-      ),
+      Effect.bind('expectedChallenge', getExpectedChallenge(request.session)),
       // Remove the challenge from the database
-      Effect.tap(({ registrationResponse }) =>
-        request.registrationChallenge.removeChallenge(
-          registrationResponse.email
-        )
-      ),
+      Effect.tap(() => request.session.set('registrationChallenge', undefined)),
       // prepare the options args for the verification function
       Effect.bind(
         'verifyRegistrationResponseOpts',

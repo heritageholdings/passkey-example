@@ -1,33 +1,21 @@
 import { RouteHandlerMethod } from 'fastify';
 import { Effect, Either, Exit, pipe } from 'effect';
 import * as S from '@effect/schema/Schema';
-import {
-  AuthenticationResponseJSON,
-  RegistrationResponseJSON,
-} from '@passkey-example/api-schema';
-import {
-  Authenticator,
-  ChallengesDatabase,
-} from '../../../plugins/localDatabase';
+import { AuthenticationResponseJSON } from '@passkey-example/api-schema';
+import { Authenticator } from '../../../plugins/localDatabase';
 import { InvalidChallengeError, VerificationFailedError } from '../errors';
 import {
   verifyAuthenticationResponse,
   VerifyAuthenticationResponseOpts,
 } from '@simplewebauthn/server';
 import { WebauthnConfigOptions } from '../../../plugins/webauthnConfig';
-import { verifyRegistrationResponse } from '@simplewebauthn/server/esm';
+import { FastifySessionObject } from '@fastify/session';
 
-const getExpectedChallenge =
-  (challengeDatabase: ChallengesDatabase) =>
-  ({
-    authenticationResponse,
-  }: {
-    authenticationResponse: AuthenticationResponseJSON;
-  }) =>
-    Either.fromNullable(
-      challengeDatabase.getChallenge(authenticationResponse.email),
-      () => new InvalidChallengeError()
-    );
+const getExpectedChallenge = (session: FastifySessionObject) => () =>
+  Either.fromNullable(
+    session.get('authenticationChallenge'),
+    () => new InvalidChallengeError()
+  );
 
 const prepareVerifyAuthenticationResponse = (
   authenticationResponse: AuthenticationResponseJSON,
@@ -49,14 +37,9 @@ export const authenticateVerifyHandler =
       Effect.bind('authenticationResponse', () =>
         S.parseEither(AuthenticationResponseJSON)(request.body)
       ),
-      Effect.bind(
-        'expectedChallenge',
-        getExpectedChallenge(request.authenticationChallenge)
-      ),
-      Effect.tap(({ authenticationResponse }) =>
-        request.authenticationChallenge.removeChallenge(
-          authenticationResponse.email
-        )
+      Effect.bind('expectedChallenge', getExpectedChallenge(request.session)),
+      Effect.tap(() =>
+        request.session.set('authenticationChallenge', undefined)
       ),
       Effect.bind('authenticator', ({ authenticationResponse }) =>
         Effect.fromNullable(

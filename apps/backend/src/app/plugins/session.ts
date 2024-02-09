@@ -6,9 +6,8 @@ import { FastifyInstance } from 'fastify';
 // Extend fastify.session with your custom type.
 declare module 'fastify' {
   interface Session {
-    user_id: string;
-    // other_key: your_prefer_type;
-    // id?: number;
+    registrationChallenge?: string;
+    authenticationChallenge?: string;
   }
 }
 

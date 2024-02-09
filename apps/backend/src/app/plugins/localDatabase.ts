@@ -9,8 +9,6 @@ import { AuthenticatorTransportFuture } from '@simplewebauthn/typescript-types';
 declare module 'fastify' {
   interface FastifyRequest {
     usersDatabase: UsersDatabase;
-    registrationChallenge: ChallengesDatabase;
-    authenticationChallenge: ChallengesDatabase;
   }
 }
 
@@ -65,33 +63,14 @@ export class UsersDatabase {
   }
 }
 
-export class ChallengesDatabase {
-  private challenges: Map<string, string | Uint8Array> = new Map();
-
-  public getChallenge(email: string): string | Uint8Array | undefined {
-    return this.challenges.get(email);
-  }
-
-  public addChallenge(email: string, challenge: string | Uint8Array): void {
-    this.challenges.set(email, challenge);
-  }
-  public removeChallenge(email: string): void {
-    this.challenges.delete(email);
-  }
-}
-
 // define plugin using promises
 const webauthnConfigPluginAsync: FastifyPluginAsync<UsersDatabase> = async (
   fastify
 ) => {
   const usersDatabase = new UsersDatabase();
-  const registrationChallenge = new ChallengesDatabase();
-  const authenticationChallenge = new ChallengesDatabase();
 
   fastify.addHook('onRequest', async (req) => {
     req.usersDatabase = usersDatabase;
-    req.registrationChallenge = registrationChallenge;
-    req.authenticationChallenge = authenticationChallenge;
   });
 };
 

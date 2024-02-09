@@ -7,11 +7,7 @@ import {
   GenerateRegistrationOptionsOpts,
 } from '@simplewebauthn/server';
 import { WebauthnConfigOptions } from '../../../plugins/webauthnConfig';
-import {
-  ChallengesDatabase,
-  UsersDatabase,
-} from '../../../plugins/localDatabase';
-import { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/server/script/deps';
+import { UsersDatabase } from '../../../plugins/localDatabase';
 import { ParseError } from '@effect/schema/ParseResult';
 
 type UserAlreadyExistsError = {
@@ -47,12 +43,6 @@ const prepareRegistrationOptions =
     supportedAlgorithmIDs: [-7, -257],
   });
 
-const storeRegistrationChallenge =
-  (registrationChallenge: ChallengesDatabase) =>
-  (options: PublicKeyCredentialCreationOptionsJSON) => {
-    registrationChallenge.addChallenge(options.user.id, options.challenge);
-  };
-
 const handleErrors =
   (reply: FastifyReply) =>
   (
@@ -82,7 +72,10 @@ export const registerGenerateOptionsHandler =
       Effect.flatMap((options) =>
         pipe(
           Effect.tryPromise(() => generateRegistrationOptions(options)),
-          Effect.tap(storeRegistrationChallenge(request.registrationChallenge))
+          // Store the challenge in the session to verify it later
+          Effect.tap((options) =>
+            request.session.set('registrationChallenge', options.challenge)
+          )
         )
       )
     );
