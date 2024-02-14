@@ -12,7 +12,7 @@ export default async (fastify: FastifyInstance) => {
 
   fastify.post('/webauthn/register/verify', registerVerifyHandler());
 
-  fastify.post(
+  fastify.get(
     '/webauthn/authenticate/generate-options',
     authenticateGenerateOptionsHandler()
   );

@@ -51,30 +51,6 @@ export const AuthenticationScreen: React.FC = () => {
           value={email}
         />
         <Button
-          title={'Login'}
-          disabled={buttonDisabled}
-          onPress={async () => {
-            setLoading(true);
-            const operationResults = await Effect.runPromiseExit(
-              authenticatePasskey(email)
-            );
-
-            Exit.match(operationResults, {
-              onFailure: (e) => {
-                console.error(e);
-                Toast.show({
-                  type: 'error',
-                  text1: 'Error',
-                  text2: `An error occurred, see the console for more details.`,
-                });
-              },
-              onSuccess: (response) => setJwt(response.token),
-            });
-            setLoading(false);
-          }}
-        />
-        <Text style={styles.center}>or</Text>
-        <Button
           title={'Register'}
           disabled={buttonDisabled}
           onPress={async () => {
@@ -91,6 +67,29 @@ export const AuthenticationScreen: React.FC = () => {
                   text2: `An error occurred, see the console for more details.`,
                 });
                 console.error(e);
+              },
+              onSuccess: (response) => setJwt(response.token),
+            });
+            setLoading(false);
+          }}
+        />
+        <Text style={styles.center}>or</Text>
+        <Button
+          title={'Login'}
+          onPress={async () => {
+            setLoading(true);
+            const operationResults = await Effect.runPromiseExit(
+              authenticatePasskey()
+            );
+
+            Exit.match(operationResults, {
+              onFailure: (e) => {
+                console.error(e);
+                Toast.show({
+                  type: 'error',
+                  text1: 'Error',
+                  text2: `An error occurred, see the console for more details.`,
+                });
               },
               onSuccess: (response) => setJwt(response.token),
             });

@@ -31,11 +31,9 @@ const nativeAuthenticatePasskey = (request: PasskeyAuthenticationRequest) =>
   });
 
 const convertToAuthenticationResponseJSON = (
-  email: string,
   response: PasskeyAuthenticationResult
 ): AuthenticationResponseJSON => ({
   ...response,
-  email,
   id: base64url.fromBase64(response.id),
   rawId: base64url.fromBase64(response.rawId),
   response: {
@@ -49,17 +47,14 @@ const convertToAuthenticationResponseJSON = (
   type: 'public-key',
 });
 
-export const authenticatePasskey = (email: string) =>
+export const authenticatePasskey = () =>
   pipe(
-    email,
-    axiosGenerateAuthenticationOptions,
+    axiosGenerateAuthenticationOptions(),
     Effect.map((response) => response.data),
     Effect.flatMap(S.parseEither(PublicKeyCredentialRequestOptions)),
     Effect.map(convertToReactNativePasskeyOptions),
     Effect.flatMap(nativeAuthenticatePasskey),
-    Effect.map((response) =>
-      convertToAuthenticationResponseJSON(email, response)
-    ),
+    Effect.map(convertToAuthenticationResponseJSON),
     Effect.flatMap(axiosVerifyAuthenticationOptions),
     Effect.map((response) => response.data),
     Effect.flatMap(S.parseEither(JwtTokenResponse))

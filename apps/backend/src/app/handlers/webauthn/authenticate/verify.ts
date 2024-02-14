@@ -41,12 +41,15 @@ export const authenticateVerifyHandler =
       Effect.tap(() =>
         request.session.set('authenticationChallenge', undefined)
       ),
-      Effect.bind('authenticator', ({ authenticationResponse }) =>
+      Effect.bind('user', ({ authenticationResponse }) =>
         Effect.fromNullable(
-          request.usersDatabase
-            .getUser(authenticationResponse.email)
-            ?.getAuthenticator(authenticationResponse.rawId)
+          request.usersDatabase.getUserByAuthenticatorId(
+            authenticationResponse.rawId
+          )
         )
+      ),
+      Effect.bind('authenticator', ({ user, authenticationResponse }) =>
+        Effect.fromNullable(user.getAuthenticator(authenticationResponse.rawId))
       ),
       Effect.bind(
         'verifyAuthenticationResponseOpts',
@@ -61,11 +64,7 @@ export const authenticateVerifyHandler =
           )
       ),
       Effect.flatMap(
-        ({
-          verifyAuthenticationResponseOpts,
-          authenticationResponse,
-          authenticator,
-        }) =>
+        ({ verifyAuthenticationResponseOpts, authenticator, user }) =>
           pipe(
             Effect.tryPromise(() =>
               verifyAuthenticationResponse(verifyAuthenticationResponseOpts)
@@ -77,17 +76,15 @@ export const authenticateVerifyHandler =
             ),
             // Update the counter in the database
             Effect.tap(({ credentialID, newCounter }) =>
-              request.usersDatabase
-                .getUser(authenticationResponse.email)
-                ?.updateAuthenticator(credentialID, {
-                  ...authenticator,
-                  counter: newCounter,
-                })
+              user.updateAuthenticator(credentialID, {
+                ...authenticator,
+                counter: newCounter,
+              })
             ),
             // sign a JWT token as a response
             Effect.map(() =>
               request.fastify.jwt.sign({
-                email: authenticationResponse.email,
+                email: user.email,
               })
             )
           )

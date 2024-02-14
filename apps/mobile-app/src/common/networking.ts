@@ -72,11 +72,8 @@ export const axiosVerifyRegistrationOptions = (
   return axiosPost('webauthn/register/verify', registrationResponse);
 };
 
-export const axiosGenerateAuthenticationOptions = (email: string) => {
-  const data = {
-    email,
-  };
-  return axiosPost('webauthn/authenticate/generate-options', data);
+export const axiosGenerateAuthenticationOptions = () => {
+  return axiosGet('webauthn/authenticate/generate-options');
 };
 
 export const axiosVerifyAuthenticationOptions = (

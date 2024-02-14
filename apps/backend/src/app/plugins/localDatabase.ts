@@ -61,6 +61,16 @@ export class UsersDatabase {
   public addUser(user: User): void {
     this.users.set(user.email, user);
   }
+
+  public getUserByAuthenticatorId(credentialId: string): User | undefined {
+    for (const user of this.users.values()) {
+      const maybeAuthenticator = user.getAuthenticator(credentialId);
+      if (maybeAuthenticator) {
+        return user;
+      }
+    }
+    return undefined;
+  }
 }
 
 // define plugin using promises
