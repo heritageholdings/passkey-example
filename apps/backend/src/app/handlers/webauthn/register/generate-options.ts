@@ -10,14 +10,14 @@ import { WebauthnConfigOptions } from '../../../plugins/webauthnConfig';
 import { UsersDatabase } from '../../../plugins/localDatabase';
 import { ParseError } from '@effect/schema/ParseResult';
 
-type UserAlreadyExistsError = {
-  _tag: 'UserAlreadyExistsError';
-};
+class UserAlreadyExistsError {
+  public readonly _tag = 'UserAlreadyExistsError';
+}
 
 const checkIfUserExists =
   (userDatabase: UsersDatabase) => (body: { email: string }) => {
     return userDatabase.getUser(body.email)
-      ? Either.left<UserAlreadyExistsError>({ _tag: 'UserAlreadyExistsError' })
+      ? Either.left(new UserAlreadyExistsError())
       : Either.right(body.email);
   };
 
