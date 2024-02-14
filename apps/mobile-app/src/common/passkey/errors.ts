@@ -6,18 +6,21 @@ const PasskeyLibraryNativeError = S.struct({
   message: S.string,
 });
 
-type ExcludedCredentialExistsError = {
-  _tag: 'ExcludedCredentialExistsError';
-};
+export class ExcludedCredentialExistsError {
+  public readonly _tag = 'ExcludedCredentialExistsError';
+}
+export class UserCancelledError {
+  public readonly _tag = 'UserCancelledError';
+}
 
-type UserCancelledError = {
-  _tag: 'UserCancelledError';
-};
+export class PasskeyNativeError {
+  public readonly _tag = 'PasskeyNative';
+  public readonly message: string;
 
-type PasskeyNativeError = {
-  _tag: 'PasskeyNativeError';
-  message: string;
-};
+  constructor(message: string) {
+    this.message = message;
+  }
+}
 
 export const parsePasskeyError = (e: unknown) =>
   pipe(
@@ -25,26 +28,16 @@ export const parsePasskeyError = (e: unknown) =>
     S.parseEither(PasskeyLibraryNativeError),
     Either.map((nativeError) => {
       if (nativeError.message.includes('InvalidStateError')) {
-        return {
-          kind: 'excludedCredentialExists',
-        };
+        return new ExcludedCredentialExistsError();
       }
       switch (nativeError.error) {
         case 'UserCancelled':
-          return {
-            kind: 'userCancelled',
-          };
+          return new UserCancelledError();
         default:
-          return {
-            kind: 'native',
-            message: nativeError.message,
-          };
+          return new PasskeyNativeError(nativeError.message);
       }
     }),
     Either.getOrElse(() => {
-      return {
-        kind: 'native',
-        message: 'Generic native error',
-      };
+      return new PasskeyNativeError('Generic native error');
     })
   );

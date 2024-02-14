@@ -1,11 +1,4 @@
-import {
-  Text,
-  TextInput,
-  View,
-  StyleSheet,
-  SafeAreaView,
-  TouchableOpacity,
-} from 'react-native';
+import { SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
 import React from 'react';
 import { Effect, Exit } from 'effect';
 import { registerPasskey } from '../../common/passkey/register';

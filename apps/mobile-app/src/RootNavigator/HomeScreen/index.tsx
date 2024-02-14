@@ -77,7 +77,7 @@ export const HomeScreen: React.FC = () => {
       setLoading(false);
     };
     void loadProfile();
-  }, []);
+  }, [jwt, setJwt]);
 
   console.log(profile);
 
