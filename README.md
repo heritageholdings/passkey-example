@@ -31,6 +31,13 @@ For step-by-step guidance on installation, please visit the [Ngrok website](http
 - Run `yarn nx prebuild mobile-app` to generate the native iOS and Android projects using Expo Prebuild
 - Run `yarn nx run mobile-app:run-ios` to start the iOS app or `yarn nx run mobile-app:run-android` to start the Android app
 
+# Repository organization
+
+The mono-repo is organized following the `nx` monorepo structure, with the following main folders:
+- `apps/backend`: contains the backend server, a simple fastify server that exposes the WebAuthn endpoints
+- `apps/mobile-app`: contains the mobile app, a simple react-native & expo project that implements the passkey registration and authentication ceremonies
+- `libs/api-schema`: contains the shared api schema, used by the backend and the mobile app to define the request and response types and validate the exchanged data
+
 # How to run
 
 If you have followed the setup steps, you should have the backend server running on your local machine and the mobile app running on your device/emulator.
