@@ -1,7 +1,10 @@
 # PasskeyExample
 
 An example repository showcasing an end to end example of passkey registration and authentication on a mobile app using WebAuthn and Expo.
-For further details about the implementation, the architecture and the technologies used, please refer to the related article (TBD insert link).
+For further details about the implementation, the architecture and the technologies used, please refer to the related articles:
+1. [Passwordless Authentication With Passkey: How It Works and Why It Matters](https://medium.com/@heritage.tech/passwordless-authentication-with-passkey-how-it-works-and-why-it-matters-part-1-dcae2a004988)
+2. How to Implement Passwordless Authentication with Passkey using Node.js
+3. How to Implement Passwordless Authentication with Passkey using React Native
 
 Please remember that this repository serves as a showcase, offering a demonstration of both backend and frontend code essential for implementing passkey authentication. It is important to note that certain simplifications have been incorporated into the code to enhance readability and understanding and is not intended for production use as would be needed to adapt and enhance the code for production environments according to best practices and security standards.
 
@@ -46,15 +49,15 @@ If everything is configured correctly, the new passkey registration ceremony sho
 
 | Login / Registration                                                                                                                                                       | Passkey Registration                                                                                                                                                       | Passkey Registration with Face ID                                                                                                                                         |
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| <img width=300 src="https://raw.githubusercontent.com/heritageholdings/passkey-example/master/docs/img/first_screen.png"> | <img width=300 src="https://raw.githubusercontent.com/heritageholdings/passkey-example/master/docs/img/first_screen.png"> | <img width=300 src="https://raw.githubusercontent.com/heritageholdings/passkey-example/master/docs/img/first_screen.png"> |
+| <img width=300 src="https://raw.githubusercontent.com/heritageholdings/passkey-example/master/docs/img/first_screen.png"> | <img width=300 src="https://raw.githubusercontent.com/heritageholdings/passkey-example/master/docs/img/registration.png"> | <img width=300 src="https://raw.githubusercontent.com/heritageholdings/passkey-example/master/docs/img/registration_faceID.png"> |
 
 If the passkey registration is successful, the user is directed to the home screen, where the user will be able to see his email, the IDs of the authenticators registered by him (and a panda holding a bamboo passkey!). From here you can log out to test logging in with the passkey you just registered
 
-<img width=300 src="https://raw.githubusercontent.com/heritageholdings/passkey-example/master/docs/img/first_screen.png">
+<img width=300 src="https://raw.githubusercontent.com/heritageholdings/passkey-example/master/docs/img/authenticated.png">
 
 Once you return to the first authentication screen, you can enter the previously registered email and press "Login". At this point the authentication ceremony will begin which will allow you to re-access the application using the previously registered passkey.
 
-<img width=300 src="https://raw.githubusercontent.com/heritageholdings/passkey-example/master/docs/img/first_screen.png">
+<img width=300 src="https://raw.githubusercontent.com/heritageholdings/passkey-example/master/docs/img/authentication.png">
 
 If any error occurs during execution, registration or authentication, check the logs of either the mobile app or the backend
 
