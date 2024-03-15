@@ -3,8 +3,8 @@
 An example repository showcasing an end to end example of passkey registration and authentication on a mobile app using WebAuthn and Expo.
 For further details about the implementation, the architecture and the technologies used, please refer to the related articles:
 1. [Passwordless Authentication With Passkey: How It Works and Why It Matters](https://medium.com/@heritage.tech/passwordless-authentication-with-passkey-how-it-works-and-why-it-matters-part-1-dcae2a004988)
-2. How to Implement Passwordless Authentication with Passkey using Node.js
-3. How to Implement Passwordless Authentication with Passkey using React Native
+2. How to Implement Passwordless Authentication with Passkey using React Native and Node.js - Part 1
+3. How to Implement Passwordless Authentication with Passkey using React Native and Node.js - Part 2
 
 Please remember that this repository serves as a showcase, offering a demonstration of both backend and frontend code essential for implementing passkey authentication. It is important to note that certain simplifications have been incorporated into the code to enhance readability and understanding and is not intended for production use as would be needed to adapt and enhance the code for production environments according to best practices and security standards.
 
@@ -21,13 +21,13 @@ For step-by-step guidance on installation, please visit the [Ngrok website](http
 - Run `yarn install` to install all dependencies
 - Run `cp .env.example .env` to create the `.env` file and fill it with the required values:
 
-| Variable | Description                                                                                                                                                                                               |
-| --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `WEBAUTHN_RPID` | The Relying Party ID (RP ID) is a unique identifier for the Relying Party entity, which is the application that is using WebAuthn to authenticate users. Insert here the Ngrok free static subdomain.     |
-| `WEBAUTHN_RPORIGIN` | The origin of the Relying Party, automatically valued via `WEBAUTHN_RPID`.                                                                                                                                |
-| `WEBAUTHN_RPNAME` | The name of the Relying Party, you can use whatever name you prefer.                                                                                                                                      |
-| `WEBAUTHN_ANDROID_CERT_FINGERPRINTS` | The SHA-256 hashes of the Android key pairs used to sign the app. You can obtain this running `./gradlew signingReport` in the `apps/mobile-app/android` folder, loooking for the task :app:signingReport |
-| `WEBAUTHN_IOS_TEAM_ID` | The Team ID of the Apple Developer account used to sign the app                                                                                                                                           |
+| Variable | Description                                                                                                                                                                                          |
+| --- |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `WEBAUTHN_RPID` | The Relying Party ID (RP ID) is a unique identifier for the Relying Party entity, which is the application that is using WebAuthn to authenticate users. Insert here the Ngrok free static subdomain. |
+| `WEBAUTHN_RPORIGIN` | The origin of the Relying Party, automatically valued via `WEBAUTHN_RPID`.                                                                                                                           |
+| `WEBAUTHN_RPNAME` | The name of the Relying Party, you can use whatever name you prefer.                                                                                                                                 |
+| `WEBAUTHN_ANDROID_CERT_FINGERPRINTS` | The SHA-256 hashes of the Android key pairs used to sign the app. You can obtain this running `keytool -list -v -keystore app/debug.keystore`, pointing to the app keystore.                         |
+| `WEBAUTHN_IOS_TEAM_ID` | The Team ID of the Apple Developer account used to sign the app.                                                                                                                                     |
 
 - Run `yarn nx run backend:serve:development` to start the backend server
 - Run `ngrok http --domain=your-ngrok-domain.ngrok-free.app 3000` to start ngrok and expose the backend server to the internet
@@ -55,7 +55,7 @@ If the passkey registration is successful, the user is directed to the home scre
 
 <img width=300 src="https://raw.githubusercontent.com/heritageholdings/passkey-example/master/docs/img/authenticated.png">
 
-Once you return to the first authentication screen, you can enter the previously registered email and press "Login". At this point the authentication ceremony will begin which will allow you to re-access the application using the previously registered passkey.
+Once you return to the first authentication screen, you can press "Login". At this point the authentication ceremony will begin which will allow you to re-access the application using the previously registered passkey.
 
 <img width=300 src="https://raw.githubusercontent.com/heritageholdings/passkey-example/master/docs/img/authentication.png">
 
