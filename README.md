@@ -1,7 +1,6 @@
-# PasskeyExample
+# React Native and Node.js Passwordless Authentication with Passkey
 
-An example repository showcasing an end to end example of passkey registration and authentication on a mobile app using WebAuthn and Expo.
-For further details about the implementation, the architecture and the technologies used, please refer to the related articles:
+This is an example repository showcasing end-to-end passkey registration and authentication on a mobile app. It uses Node.js with [SimpleWebAuthn](<https://github.com/MasterKale/SimpleWebAuthn>) and React Native with [react-native-passkey](<https://github.com/f-23/react-native-passkey>). For more information about the implementation, architecture, and technologies used, please refer to the related articles:
 1. [Passwordless Authentication With Passkey: How It Works and Why It Matters](https://medium.com/@heritage.tech/passwordless-authentication-with-passkey-how-it-works-and-why-it-matters-part-1-dcae2a004988)
 2. How to Implement Passwordless Authentication with Passkey using React Native and Node.js - Part 1
 3. How to Implement Passwordless Authentication with Passkey using React Native and Node.js - Part 2
@@ -59,6 +58,6 @@ Once you return to the first authentication screen, you can press "Login". At th
 
 <img width=300 src="https://raw.githubusercontent.com/heritageholdings/passkey-example/master/docs/img/authentication.png">
 
-If any error occurs during execution, registration or authentication, check the logs of either the mobile app or the backend
+If any error occurs during execution, registration or authentication, check the logs of either the mobile app or the backend.
 
 Please remember that in this simple demo, the backend server is not persistent, so if you restart it, all the registered credentials will be lost!
