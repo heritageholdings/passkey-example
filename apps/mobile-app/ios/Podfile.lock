@@ -396,7 +396,7 @@ PODS:
   - React-jsinspector (0.72.6)
   - React-logger (0.72.6):
     - glog
-  - react-native-passkey (2.1.1):
+  - react-native-passkey (3.0.0):
     - React-Core
   - react-native-safe-area-context (4.6.3):
     - RCT-Folly
@@ -748,7 +748,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 3bf18ff7cb03cd8dfdce08fbbc0d15058c1d71ae
   React-jsinspector: 194e32c6aab382d88713ad3dd0025c5f5c4ee072
   React-logger: cebf22b6cf43434e471dc561e5911b40ac01d289
-  react-native-passkey: 29ff814a83dfd4311478498e71a801dce68043ac
+  react-native-passkey: 1f8d18b3d0202ae5f6171cd39e3193247ab6f1af
   react-native-safe-area-context: 36cc67648134e89465663b8172336a19eeda493d
   React-NativeModulesApple: 02e35e9a51e10c6422f04f5e4076a7c02243fff2
   React-perflogger: e3596db7e753f51766bceadc061936ef1472edc3
@@ -774,4 +774,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 0af5f9eae31c4f74d02762d86b314e00e744da35
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.15.2
