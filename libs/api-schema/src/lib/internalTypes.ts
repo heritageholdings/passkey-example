@@ -1,15 +1,16 @@
 // https://w3c.github.io/webauthn/#enum-transport
 import * as S from '@effect/schema/Schema';
 
-export const AuthenticatorTransportFuture = S.literal(
-  'ble',
-  'internal',
-  'nfc',
-  'usb',
-  'cable',
-  'smart-card',
-  'hybrid'
-);
+enum AuthenticatorTransport {
+  usb = 'usb',
+  nfc = 'nfc',
+  ble = 'ble',
+  smartCard = 'smart-card',
+  hybrid = 'hybrid',
+  internal = 'internal',
+}
+
+export const AuthenticatorTransportFuture = S.enums(AuthenticatorTransport);
 
 // https://w3c.github.io/webauthn/#dom-authenticatorselectioncriteria-authenticatorattachment
 export const AuthenticatorAttachment = S.literal('cross-platform', 'platform');
